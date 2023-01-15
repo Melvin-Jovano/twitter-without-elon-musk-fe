@@ -1,5 +1,5 @@
 <template>
-    <svg viewBox="0 0 24 24" aria-hidden="true"
+    <svg viewBox="0 0 24 24" width="27" height="27" aria-hidden="true"
         class="r-18jsvk2 r-4qtqp9 r-yyyyoo r-lwhw9o r-dnmrzs r-bnwqim r-1plcrui r-lrvibr r-cnnz9e">
         <g>
             <path
