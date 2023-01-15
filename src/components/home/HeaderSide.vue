@@ -1,14 +1,14 @@
 <script setup>
-import IconHash from '../../assets/icons/IconHash.vue';
-import IconHomes from '../../assets/icons/IconHomes.vue';
-import IconMessage from '../../assets/icons/IconMessage.vue';
-import IconNotification from '../../assets/icons/IconNotification.vue';
-import IconBookmarks from '../../assets/icons/IconBookmarks.vue';
-import IconLists from '../../assets/icons/IconLists.vue';
-import IconProfile from '../../assets/icons/IconProfile.vue'
-import IconMore from '../../assets/icons/IconMore.vue';
-import IconTwitter from '../../assets/icons/IconTwitter.vue'
-import IconThreeDots from '../../assets/icons/IconThreeDots.vue'
+    import IconHash from '../../assets/icons/IconHash.vue';
+    import IconHomes from '../../assets/icons/IconHomes.vue';
+    import IconMessage from '../../assets/icons/IconMessage.vue';
+    import IconNotification from '../../assets/icons/IconNotification.vue';
+    import IconBookmarks from '../../assets/icons/IconBookmarks.vue';
+    import IconLists from '../../assets/icons/IconLists.vue';
+    import IconProfile from '../../assets/icons/IconProfile.vue'
+    import IconMore from '../../assets/icons/IconMore.vue';
+    import IconTwitter from '../../assets/icons/IconTwitter.vue';
+    import IconThreeDots from '../../assets/icons/IconThreeDots.vue';
 </script>
 
 <template>
