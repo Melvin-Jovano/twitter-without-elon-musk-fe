@@ -88,10 +88,10 @@
     </div>
 </template>
 
-<style>
+<style scoped>
 #wrapper{
     position: fixed;
-    border-right: 1px solid rgba(0, 0, 0, 0.075);
+    /* border-right: 1px solid rgba(0, 0, 0, 0.075); */
 }
 
 .img{
@@ -121,6 +121,10 @@ a {
 
 a:hover{
     color: #0f1419;
+}
+
+.navbar-list{
+    transition: 0.3s;
 }
 
 .navbar-list:hover{

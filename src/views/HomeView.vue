@@ -5,15 +5,15 @@ import SideMenuVue from '../components/home/SideMenu.vue';
 </script>
 
 <template>
-    <div class="container justify-content-between p-4">
+    <div class="container justify-content-center">
         <div class="row">
-            <div class="col">
+            <div class="col-3">
                 <HeaderSide />
             </div>
-            <div class="col">
+            <div class="col-6">
                 <MainContentVue />
             </div>
-            <div class="col">
+            <div class="col-3">
                 <SideMenuVue />
             </div>
         </div>
