@@ -37,3 +37,7 @@ body{
 .cursor-pointer {
   cursor: pointer;
 }
+
+.rounded-50px {
+  border-radius: 50px;
+}
