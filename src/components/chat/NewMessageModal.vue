@@ -19,22 +19,23 @@
                 <div class="border-bottom">
                     <div class="input-group">
                         <span class="mx-3 my-2" id="basic-addon1"><IconSearch /></span>
-                        <input type="search" class="form-control form-control-sm border-0 outline-none outline-focus-none" placeholder="Search people">
+                        <input @keyup="filterUsers($event.target.value)" type="search" class="form-control form-control-sm border-0 outline-none outline-focus-none" placeholder="Search people">
                     </div>
                 </div>
 
                 <div class="hv-65 overflow-auto">
-                    <div class="px-3 py-2 cursor-pointer profil-card">
+                    <div class="px-3 py-2 cursor-pointer profil-card" v-for="user in users" :key="user.id">
                         <table>
                             <tr>
                                 <td rowspan="2" class="">
-                                    <img src="https://images.unsplash.com/photo-1661956601030-fdfb9c7e9e2f?ixlib=rb-4.0.3&ixid=MnwxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1484&q=80" alt="" class="rounded-circle" width="40" height="40" srcset="">
+                                    <img v-if="user.photo !== null" :src="API_URL + user.photo" alt="" class="rounded-circle" width="40" height="40" />
+                                    <img v-else :src="API_URL + DEFAULT_PHOTO" alt="" class="rounded-circle" width="40" height="40" />
                                     &nbsp;&nbsp;
                                 </td>
-                                <td class="fw-bold text-sm">Joki Tugasmu</td>
+                                <td class="fw-bold text-sm">{{ user.name }}</td>
                             </tr>
                             <tr>
-                                <td class="text-muted">@joki</td>
+                                <td class="text-muted">@{{ user.username }}</td>
                             </tr>
                         </table>
                     </div>
@@ -45,7 +46,39 @@
 </template>
 
 <script setup>
+    import { ref } from 'vue';
     import IconSearch from '../../assets/icons/IconSearch.vue';
+    import {getUsers} from  '../../api/auth';
+    import {API_URL, DEFAULT_PHOTO} from '../../const';
+
+    const lastId = ref(0);
+    const users = ref([]);
+
+    async function filterUsers(input) {
+        try {
+            const findUsers = await getUsers({name: input}, {lastId: lastId.value});
+            if(findUsers.data.message === 'SUCCESS') {
+                lastId.value = findUsers.data.data.lastId;
+                users.value = findUsers.data.data.data;
+            }
+        } catch (error) {
+            return;
+        }
+    }
+
+    async function scrollUsers() {
+        try {
+            if(lastId.value !== null) {
+                const findUsers = await getUsers({name: input}, {lastId: lastId.value});
+                if(findUsers.data.message === 'SUCCESS') {
+                    lastId.value = findUsers.data.data.lastId;
+                    users.value.push(findUsers.data.data.data);
+                }
+            }
+        } catch (error) {
+            return;
+        }
+    }
 </script>
 
 <style scoped>
