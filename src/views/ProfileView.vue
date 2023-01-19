@@ -1,13 +1,13 @@
 <template>
-    <div class="container justify-content-between p-4">
+    <div class="container justify-content-between">
         <div class="row">
-            <div class="col">
+            <div class="col-3">
                 <HeaderSide />
             </div>
-            <div class="col">
-                Lorem ipsum dolor sit amet consectetur, adipisicing elit. At blanditiis velit architecto perspiciatis maiores, repellat modi asperiores assumenda magni perferendis quae nam dolor, aliquam expedita deserunt quos eveniet. Quam, fuga.
+            <div class="col-6 min-vh-100 p-0 position-relative border-start border-end">
+                <TweetView/>
             </div>
-            <div class="col">
+            <div class="col-3">
                 <SideMenuVue />
             </div>
         </div>
@@ -17,4 +17,5 @@
 <script setup>
     import HeaderSide from '../components/home/HeaderSide.vue';
     import SideMenuVue from '../components/home/SideMenu.vue';
+    import TweetView from '../components/profile/TweetView.vue';
 </script>
