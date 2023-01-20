@@ -10,7 +10,7 @@
                         </h5>
                     </div>
                     <div>
-                        <button class="py-1 px-3 btn-primary btn btn-lg border-50px bg-primary-twitter text-sm fw-bold text-sm" :disabled="selectedUsers.length === 0">
+                        <button class="py-1 px-3 btn-primary btn btn-lg border-50px bg-primary-twitter text-sm fw-bold text-sm" :disabled="selectedUsers.length === 0" @click="addChatList()">
                             Next
                         </button>
                     </div>
@@ -63,6 +63,7 @@
     import {getUsers} from  '../../api/auth';
     import {API_URL, DEFAULT_PHOTO} from '../../const';
     import IconTimes from '../../assets/icons/IconTimes.vue';
+    import axios from 'axios';
 
     const lastId = ref(0);
     const users = ref([]);
@@ -133,6 +134,14 @@
                     users.value.push(findUsers.data.data.data);
                 }
             }
+        } catch (error) {
+            return;
+        }
+    }
+
+    async function addChatList() {
+        try {
+            
         } catch (error) {
             return;
         }
