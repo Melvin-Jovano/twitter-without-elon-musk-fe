@@ -10,7 +10,7 @@
                         </h5>
                     </div>
                     <div>
-                        <button class="py-1 px-3 btn-primary btn btn-lg border-50px bg-primary-twitter text-sm fw-bold text-sm" :disabled="selectedUsers.length === 0" @click="addChatList()">
+                        <button class="py-1 px-3 btn-primary btn btn-lg border-50px bg-primary-twitter text-sm fw-bold text-sm" :disabled="selectedUsers.length === 0" @click="createChatList()" data-bs-dismiss="modal">
                             Next
                         </button>
                     </div>
@@ -63,8 +63,10 @@
     import {getUsers} from  '../../api/auth';
     import {API_URL, DEFAULT_PHOTO} from '../../const';
     import IconTimes from '../../assets/icons/IconTimes.vue';
-    import axios from 'axios';
+    import {addChatList} from '../../api/chat_list';
+    import chatList from '../../stores/chat_list';
 
+    const chatListStores = chatList();
     const lastId = ref(0);
     const users = ref([]);
     const selectedUsers = ref([]);
@@ -97,7 +99,7 @@
         }
     }
 
-    // TODO Implement Debouncin
+    // TODO Implement Debouncing
     async function filterUsers(input) {
         try {
             users.value = [];
@@ -139,9 +141,12 @@
         }
     }
 
-    async function addChatList() {
+    async function createChatList() {
         try {
-            
+            const createChatList = await addChatList({userIds: selectedUsers.value.map(user => user.id), name: 'Bandar'});
+            if(createChatList.data.message === 'SUCCESS') {
+                chatListStores.list.push(createChatList.data.data);
+            }
         } catch (error) {
             return;
         }
