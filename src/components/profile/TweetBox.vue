@@ -1,10 +1,10 @@
 <script setup>
     import IconComment from '../../assets/icons/IconComment.vue';
-import IconLike from '../../assets/icons/IconLike.vue';
-import IconRetweet from '../../assets/icons/IconRetweet.vue';
-import IconShare from '../../assets/icons/IconShare.vue';
-import IconThreeDots from '../../assets/icons/IconThreeDots.vue';
-import IconView from '../../assets/icons/IconView.vue';
+    import IconLike from '../../assets/icons/IconLike.vue';
+    import IconRetweet from '../../assets/icons/IconRetweet.vue';
+    import IconShare from '../../assets/icons/IconShare.vue';
+    import IconThreeDots from '../../assets/icons/IconThreeDots.vue';
+    import IconView from '../../assets/icons/IconView.vue';
 </script>
 
 <template>

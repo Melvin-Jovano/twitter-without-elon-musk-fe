@@ -1,7 +1,30 @@
-<script setup>
+<script>
     import IconBack from '../../assets/icons/IconBack.vue';
     import IconCalender from '../../assets/icons/IconCalender.vue';
     import TweetBox from './TweetBox.vue'
+    import EditModal from './EditModal.vue';
+
+    export default{
+        components:{
+            IconBack,
+            IconCalender,
+            TweetBox,
+            EditModal
+        },
+        data(){
+            return{
+                show : false
+            }
+        },
+        methods:{
+            openModal(){
+                this.show = true
+            },
+            closeModal(){
+                this.show = false
+            }
+        }
+    }
 </script>
 
 <template>
@@ -26,7 +49,7 @@
             <div class="d-flex flex-column profileInfo mb-3">
                 <div class="d-flex w-100 justify-content-between">
                     <div class="w-25 mw-48 mt-15">
-                        <div class="w-100 ratio ratio-1x1 rounded-circle">
+                        <div class="w-100 rounded-circle">
                             <a href="#">
                                 <div class="square">
                                     <div class="position-absolute rounded-circle profileWrapper">
@@ -37,7 +60,7 @@
                             </a>
                         </div>
                     </div>
-                    <a href="#" class="rounded-pill d-flex align-items-center text-decoration-none editProfile bgHover">
+                    <a href="#" class="rounded-pill d-flex align-items-center text-decoration-none editProfile bgHover" @click="openModal()">
                         <div class="fs-6 lh-sm fw-bold text-black">
                             Edit profile
                         </div>
@@ -105,6 +128,7 @@
             <TweetBox/>
             <TweetBox/>
         </div>
+        <EditModal :show = "show" @setModal="closeModal()"/>
     </div>
 </template>
 
@@ -162,8 +186,8 @@
     }
 
     .profilePicture{
-        width: calc(100% - 10px);
-        height: calc(100% - 10px);
+        width: calc(100% - 7px);
+        height: calc(100% - 7px);
         background-image: url('http://localhost:3000/images/61ced9f0f0923e4fd4bf1cb0accf1baa.jpg');
         background-size: cover;
         background-repeat: no-repeat;
