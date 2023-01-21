@@ -63,10 +63,10 @@
     import {getUsers} from  '../../api/auth';
     import {API_URL, DEFAULT_PHOTO} from '../../const';
     import IconTimes from '../../assets/icons/IconTimes.vue';
-    import {addChatList} from '../../api/chat_list';
-    import chatList from '../../stores/chat_list';
+    import chat from '../../stores/chat';
+    import { addChatList } from '../../api/chat';
 
-    const chatListStores = chatList();
+    const chatStores = chat();
     const lastId = ref(0);
     const users = ref([]);
     const selectedUsers = ref([]);
@@ -143,9 +143,17 @@
 
     async function createChatList() {
         try {
-            const createChatList = await addChatList({userIds: selectedUsers.value.map(user => user.id), name: 'Bandar'});
+            let name = 'New Chat';
+            
+            if(selectedUsers.value.map(user => user.id).length > 1) {
+                name = 'New Group';
+            } else {
+                name = selectedUsers.value[0].name;
+            }
+
+            const createChatList = await addChatList({userIds: selectedUsers.value.map(user => user.id), name});
             if(createChatList.data.message === 'SUCCESS') {
-                chatListStores.list.push(createChatList.data.data);
+                chatStores.chatListKey++;
             }
         } catch (error) {
             return;

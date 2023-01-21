@@ -3,9 +3,15 @@ import { defineStore } from 'pinia'
 
 const chat = defineStore('chat', () => {
   const messages = ref([]);
+  const list = ref([]);
+  const chatListKey = ref(0);
+  const showHeading = ref(true);
 
   return { 
-    messages
+    messages,
+    list,
+    chatListKey,
+    showHeading
   }
 });
 

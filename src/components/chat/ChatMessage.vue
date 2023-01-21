@@ -1,5 +1,5 @@
 <template>
-    <div class="col d-flex justify-content-center align-items-center overflow-auto" v-if="chatStores.messages.length === 0">
+    <div class="col d-flex justify-content-center align-items-center overflow-auto" v-if="chatStores.showHeading">
         <div class="w-50" >
             <h3 class="fw-bold">Select a message</h3>
             <p class="text-muted px-2 mb-4">
@@ -13,7 +13,7 @@
 
     <div class="col" v-else>
         <!-- TODO Get userId -->
-        <MessageBubble v-for="chat in chatStores.messages" :message="chat.content" :isMe="chat.sender_id === 3"  />
+        <MessageBubble v-for="chat in chatStores.messages" :message="chat.content" :time="chat.created_at" :isMe="chat.sender_id === 3"  />
     </div>
 </template>
 
@@ -23,4 +23,6 @@
     import chat from '../../stores/chat';
 
     const chatStores = chat();
+
+
 </script>
