@@ -33,7 +33,7 @@
                     </div>
 
                     <div v-else>
-                        <div v-for="chatList in chatListStores.list" :key="chatList.id">
+                        <div v-for="chatList in chatListStores.list" :key="chatList.id" @click="selectChatList(chatList.id)" class="chat-list cursor-pointer p-2">
                             <table>
                                 <tr>
                                     <td rowspan="2" class="">
@@ -70,17 +70,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col d-flex justify-content-center align-items-center overflow-auto">
-                <div class="w-50">
-                    <h3 class="fw-bold">Select a message</h3>
-                    <p class="text-muted px-2 mb-4">
-                        Choose from your existing conversations, start a new one, or just keep swimming.
-                    </p>
-                    <button data-bs-toggle="modal" data-bs-target="#new-message-modal" class="py-3 px-5 btn-primary btn btn-lg border-50px bg-primary-twitter text-sm fw-bold text-sm">
-                        New message
-                    </button>
-                </div>
-            </div>
+            <ChatMessage />
         </div>
     </div>
 
@@ -89,17 +79,32 @@
 
 <script setup>
     import HeaderSide from '../components/home/HeaderSide.vue';
+    import ChatMessage from '../components/chat/ChatMessage.vue';
     import IconChatSetting from '../assets/icons/IconChatSetting.vue';
     import IconChatNewChat from '../assets/icons/IconChatNewChat.vue';
     import NewMessageModal from '../components/chat/NewMessageModal.vue';
     import chatList from '../stores/chat_list';
     import { API_URL } from '../const';
     import moment from 'moment';
+    import chat from '../stores/chat';
     import {getChatLists} from '../api/chat_list';
+    import {getChatByGroupId} from '../api/chat';
     import { onMounted, ref } from 'vue';
 
     const chatListStores = chatList();
+    const chatStores = chat();
     const lastId = ref(null);
+
+    async function selectChatList(groupId) {
+        try {
+            const getChats = await getChatByGroupId({}, {groupId});
+            if(getChats.data.message === 'SUCCESS') {
+                chatStores.messages = getChats.data.data.data;
+            }
+        } catch (error) {
+            return;
+        }
+    }
 
     onMounted(async () => {
         try {
@@ -113,3 +118,9 @@
         }
     });
 </script>
+
+<style scoped>
+    .chat-list:hover {
+        background-color: rgba(144, 178, 245, 0.15);
+    }
+</style>
