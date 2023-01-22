@@ -21,9 +21,3 @@
 
     const chatStores = chat();
 </script>
-
-<style scoped>
-    .chat-list:hover {
-        background-color: rgba(144, 178, 245, 0.15);
-    }
-</style>

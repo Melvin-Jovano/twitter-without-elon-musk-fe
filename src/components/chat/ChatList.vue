@@ -12,7 +12,6 @@
             </div>
         </div>
         <div class="px-3">
-
             <div v-if="chatStores.list.length === 0">
                 <h2 class="fw-bold">
                     Welcome to your inbox!
@@ -28,7 +27,7 @@
             </div>
 
             <div v-else>
-                <div v-for="chatList in chatStores.list" :key="chatList.id" @click="selectChatList(chatList.id)" class="chat-list cursor-pointer p-2">
+                <div v-for="chatList in chatStores.list" :key="chatList.id" @click="selectChatList(chatList.id, chatList.name, chatList.photo)" class="chat-list cursor-pointer p-2 chat-list">
                     <table>
                         <tr>
                             <td rowspan="2" class="">
@@ -79,12 +78,14 @@
     const chatStores = chat();
     const lastId = ref(null);
 
-    async function selectChatList(groupId) {
+    async function selectChatList(groupId, name, photo) {
         try {
             const getChats = await getChatByGroupId({}, {groupId});
             if(getChats.data.message === 'SUCCESS') {
                 chatStores.showHeading = false;
                 chatStores.messages = getChats.data.data.data.reverse();
+                chatStores.name = name;
+                chatStores.photo = photo;
             }
         } catch (error) {
             return;
@@ -103,3 +104,9 @@
         }
     });
 </script>
+
+<style scoped>
+    .chat-list:hover {
+        background-color: rgba(144, 178, 245, 0.15);
+    }
+</style>

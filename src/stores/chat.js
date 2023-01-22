@@ -6,8 +6,12 @@ const chat = defineStore('chat', () => {
   const list = ref([]);
   const chatListKey = ref(0);
   const showHeading = ref(true);
+  const name = ref('');
+  const photo = ref('');
 
-  return { 
+  return {
+    photo,
+    name,
     messages,
     list,
     chatListKey,

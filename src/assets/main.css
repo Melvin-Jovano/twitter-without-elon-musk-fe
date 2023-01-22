@@ -2,11 +2,11 @@
 
 body{
   background-color: rgb(255, 255, 255);
+  overflow: hidden;
 }
 
 .border-50px {
   border-radius: 50px 50px 50px 50px;
-
 }
 
 .bg-primary-twitter {
@@ -19,6 +19,10 @@ body{
 
 .text-xs {
   font-size: .8rem;
+}
+
+.hv-80 {
+  height: 80vh;
 }
 
 .hv-95 {
