@@ -49,7 +49,7 @@
                     </div>
                 </div>
             </div>
-            <div class="content p-2" v-for="posts in getAllPosts" :key="posts.id">
+            <div class="content p-2" v-for="posts in getPosts" :key="posts.id">
                 <div class="content-header p-2">
                     <div class="d-flex">
                         <div class="profile-pict mt-3 m-2">
@@ -70,7 +70,7 @@
                                     <time datetime="" style="color: #536471; font-size: 15px;">13h</time>
                                 </span>
                                 <div id="description">
-                                    Lorem ipsum dolor sit amet, consectetur adipisicing elit. Veniam, voluptate earum nemo alias iure maiores.
+                                    {{ posts.content }}
                                 </div>
                             </div>
                             <div class="text-center">
@@ -131,22 +131,17 @@ const posts = ref([]);
 
 async function getPosts() {
     try {
-        const getPosts = await getAllPosts({ page: page.value });
-        if (getPosts.data.message === 'get all post success') {
-            // Di Response API Mu Gdak Ngirim Ini Page Ke Berapa, Jd Aq Komen....
-            // page.value = getPosts.data.data;
-            posts.value = getPosts.data.data;
-            console.log(posts.value);
+        const getPost = await getAllPosts({ page: page.value });
+        if (getPost.data.message === 'get all post success') {
+            posts.value = getPost.data;
         }
-        return getPosts;
+        console.log(getPost);
+        return getPost;
     } catch (error) {
         console.log(error);
     }
 }
-
-await getPosts();
-
-console.log(posts.value);
+getPosts()
 
 </script>
 

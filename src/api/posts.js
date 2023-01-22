@@ -7,5 +7,5 @@ export async function getAllPosts({limit, page}) {
             limit: limit || 10,
             page: page || 1
         }
-    });
+    })
 }
