@@ -1,32 +1,3 @@
-<script>
-    import IconBack from '../../assets/icons/IconBack.vue';
-    import IconCalender from '../../assets/icons/IconCalender.vue';
-    import TweetBox from './TweetBox.vue'
-    import EditModal from './EditModal.vue';
-
-    export default{
-        components:{
-            IconBack,
-            IconCalender,
-            TweetBox,
-            EditModal
-        },
-        data(){
-            return{
-                show : false
-            }
-        },
-        methods:{
-            openModal(){
-                this.show = true
-            },
-            closeModal(){
-                this.show = false
-            }
-        }
-    }
-</script>
-
 <template>
     <div class="d-flex align-items-center head">
         <div class="flex-shrink-1 me-4 pe-2">
@@ -36,7 +7,7 @@
         </div>
         <div class="d-flex flex-column flex-grow-1">
             <span class="fs-5 fw-bold lh-1">
-                Name
+                {{ data.userData.name || "Name" }}
             </span>
             <span class="fs-13 text-muted mb-1">
                 0 Tweets
@@ -45,7 +16,8 @@
     </div>
     <div class="d-flex flex-column mt-53">
         <div class="d-flex flex-column">
-            <div class="w-100 bg-profile"></div>
+            <div class="w-100 bg-profile" v-if="data.userData.cover" :style="{backgroundImage: `url('${API_URL}${data.userData.cover}')`}"></div>
+            <div class="w-100 bg-profile" v-else></div>
             <div class="d-flex flex-column profileInfo mb-3">
                 <div class="d-flex w-100 justify-content-between">
                     <div class="w-25 mw-48 mt-15">
@@ -53,7 +25,9 @@
                             <a href="#">
                                 <div class="square">
                                     <div class="position-absolute rounded-circle profileWrapper">
-                                        <div class="position-absolute top-50 start-50 translate-middle rounded-circle profilePicture">
+                                        <div class="position-absolute top-50 start-50 translate-middle rounded-circle profilePicture" v-if="data.userData.photo" :style="{backgroundImage: `url('${API_URL}${data.userData.photo}')`}">
+                                        </div>
+                                        <div class="position-absolute top-50 start-50 translate-middle rounded-circle profilePicture" v-else :style="{backgroundImage: `url('${API_URL}/images/default.jpeg')`}">
                                         </div>
                                     </div>
                                 </div>
@@ -68,15 +42,17 @@
                 </div>
                 <div class="d-flex flex-column mt-1 mb-2 pb-1">
                     <span class="fw-bold lh-base fs-5 lh-sm">
-                        Name
+                        {{ data.userData.name || "Name" }}
                     </span>
                     <div class="fc-gray fs-15 lh-sm">
-                        @Username
+                        @{{ data.userData.username || "Username" }}
                     </div>
                 </div>
                 <div class="fc-gray mb-2 pb-1">
                     <IconCalender class="me-1 align-text-bottom fc-gray"/>
-                    <span>Joined January 2023</span>
+                    <span>
+                        Joined {{ data.userData.joinDate || "Year Month" }}
+                    </span>
                 </div>
                 <div class="d-flex">
                     <div class="me-3 pe-1">
@@ -125,12 +101,69 @@
                     </a>
                 </div>
             </div>
-            <TweetBox/>
-            <TweetBox/>
+            <TweetBox :dataUser = data.userData />
         </div>
-        <EditModal :show = "show" @setModal="closeModal()"/>
+        <EditModal :show = "data.isShow" :dataUser = data.userData @setModal="closeModal()" @deleteCover="deleteCover()"/>
     </div>
 </template>
+
+<script setup>
+    import IconBack from '../../assets/icons/IconBack.vue';
+    import IconCalender from '../../assets/icons/IconCalender.vue';
+    import TweetBox from './TweetBox.vue'
+    import EditModal from './EditModal.vue';
+    import { onMounted, reactive } from 'vue';
+    import { deleteBackground, getUser } from '../../api/profile.js'
+    import { API_URL } from '../../const';
+    import moment from 'moment';
+    
+    const data = reactive({
+        isShow : false,
+        userData : {}
+    })
+    
+    function openModal(){
+        data.isShow = true
+    }
+    
+    function closeModal(){
+        data.isShow = false
+    }
+
+    function format_date(val){
+        return moment(val).format('MMMM YYYY')
+    }
+
+    async function getData(){
+        try{
+            const user = await getUser()
+            if(user.data.message === "SUCCESS"){
+                data.userData = user.data.data
+                data.userData.joinDate = format_date(data.userData.created_at)
+            }
+        }
+        catch(error){
+            console.log(error)
+        }
+    }
+
+    async function deleteCover(){
+        try{
+            const user = await deleteBackground(data.userData.cover)
+            if(user.data.message === "SUCCESS"){
+                data.userData.cover = ""
+                console.log(data.userData.cover)
+            }
+        }
+        catch(error){
+            console.log(error)
+        }
+    }
+
+    onMounted(()=>{
+        getData()
+    })
+</script>
 
 <style scoped>
     .backButton{
@@ -153,7 +186,6 @@
     .bg-profile{
         background-color: rgb(207, 217, 222);
         padding-bottom: 33.3333%;
-        background-image: url('../../assets/john-towner-JgOeRuGD_Y4-unsplash.jpg');
         background-size: cover ;
         background-repeat: no-repeat;
         background-position: center top;
@@ -188,7 +220,6 @@
     .profilePicture{
         width: calc(100% - 7px);
         height: calc(100% - 7px);
-        background-image: url('http://localhost:3000/images/61ced9f0f0923e4fd4bf1cb0accf1baa.jpg');
         background-size: cover;
         background-repeat: no-repeat;
         background-position: center;

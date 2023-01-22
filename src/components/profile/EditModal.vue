@@ -1,37 +1,180 @@
+<template>
+    <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true" @click="closeModal()">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" @click.stop>
+            <div class="modal-content">
+                <div class="modal-header pt-2 pb-2 border-bottom-0">
+                    <button class="rounded-circle bgClose bgHover border-0 bg-transparent" type = "button" @click="closeModal()" data-bs-dismiss="modal" aria-label="close">
+                        <IconClose/>
+                    </button>
+                    <div class="flex-fill ms-4">
+                        <h2 class="fs-5 mb-0 fw-bold ptb-2">
+                            Edit profile
+                        </h2>
+                    </div>
+                    <button class="rounded-pill saveButton" type="button">
+                        <span class="ps-2 pe-2 text-white fw-bold">
+                            Save
+                        </span>
+                    </button>
+                </div>
+                <div class="modal-body p-0">
+                    <div class="d-flex flex-column" style="padding-bottom: 64px;">
+                        <div class="ps-1 pe-1">
+                            <div class="w-100 bg-profile" v-if="data.userData.cover" :style="{backgroundImage: `url('${API_URL}${data.userData.cover}')`}">
+                                <div class="position-absolute top-50 start-50 translate-middle uploadBtnSize">
+                                    <div class="d-flex">
+                                        <div style="min-width: 44px;">
+                                            <div class="square">
+                                                <label class="picBtnWrapper rounded-circle" for="bgImgUpload" title="Add photo">
+                                                    <IconUpload class="position-absolute top-50 start-50 translate-middle"/>
+                                                </label>
+                                                <input type="file" accept="image/jpeg, image/png, image/jpg" class="uploadField" title="Add photo" id="bgImgUpload">
+                                            </div>
+                                        </div>
+                                        <div style="min-width: 44px; margin-left: 20px;">
+                                            <div class="square">
+                                                <button class="picBtnWrapper rounded-circle border-0" type="button" title="Delete photo" @click="deleteBg">
+                                                    <IconClose class="position-absolute top-50 start-50 translate-middle"/>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="w-100 bg-profile" v-else>
+                                <div class="position-absolute top-50 start-50 translate-middle uploadBtnSize">
+                                    <div class="square">
+                                        <label class="picBtnWrapper rounded-circle" for="bgImgUpload" title="Add photo">
+                                            <IconUpload class="position-absolute top-50 start-50 translate-middle"/>
+                                        </label>
+                                        <input type="file" accept="image/jpeg, image/png, image/jpg" class="uploadField" title="Add photo" id="bgImgUpload">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="w-25 marginProfile">
+                            <div class="w-100 rounded-circle">
+                                <div class="square">
+                                    <div class="position-absolute rounded-circle profileWrapper">
+                                        <div class="position-absolute top-50 start-50 translate-middle rounded-circle profileUser" :style="{backgroundImage: `url('${API_URL}${data.userData.photo}')`}">
+                                            <div class="position-absolute top-50 start-50 translate-middle uploadBtnSize">
+                                                <div class="square">
+                                                    <label class="picBtnWrapper rounded-circle" for="profileImgUpload" title="Add photo">
+                                                        <IconUpload class="position-absolute top-50 start-50 translate-middle"/>
+                                                    </label>
+                                                    <input type="file" accept="image/jpeg, image/png, image/jpg" class="uploadField" title="Add photo" id="profileImgUpload">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="boxPadding">
+                            <div class="form-floating">
+                                <input type="text" class="form-control fs-17" id="editName" placeholder="Name" v-model="data.userData.name">
+                                <label for="editName" class="fc-gray fs-17">
+                                    Name
+                                </label>
+                            </div>
+                        </div>
+                        <div class="boxPadding">
+                            <div class="form-floating">
+                                <textarea id="editBio" class="form-control fs-17" placeholder="Bio" style="height: 100px;">{{ data.userData.bio }}</textarea>
+                                <label for="editName" class="fc-gray fs-17">
+                                    Bio
+                                </label>
+                            </div>
+                        </div>
+                        <div class="boxPadding">
+                            <div class="form-floating">
+                                <input type="text" class="form-control fs-17" id="editLoc" placeholder="Name" v-model="data.userData.location">
+                                <label for="editLoc" class="fc-gray fs-17">
+                                    Location
+                                </label>
+                            </div>
+                        </div>
+                        <div class="boxPadding">
+                            <div class="form-floating">
+                                <input type="text" class="form-control fs-17" id="editWeb" placeholder="Name">
+                                <label for="editWeb" class="fc-gray fs-17">
+                                    Website
+                                </label>
+                            </div>
+                        </div>
+                        <div class="d-flex flex-column" style="padding: 16px;">
+                            <div class="d-flex">
+                                <span class="fc-gray">
+                                    Birth date
+                                </span>
+                                <span class="ps-1 pe-1 fc-gray">
+                                    ·
+                                </span>
+                                <span class="fc-blue">
+                                    Edit
+                                </span>
+                            </div>
+                            <span class="fs-lh">
+                                December 20, 2003
+                            </span>
+                        </div>
+                        <a href="#" class="boxPadding text-black text-decoration-none switchPro">
+                            <div class="d-flex align-items-center">
+                                <span class="flex-grow-1 fs-lh">
+                                    Switch to professional
+                                </span>
+                                <IconArrowRight style="height: 20px; width: 20px;"/>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+
 <script setup>
     import IconClose from '../../assets/icons/IconClose.vue'
     import IconUpload from '../../assets/icons/IconUpload.vue'
     import IconArrowRight from '../../assets/icons/IconArrowRight.vue'
     import {reactive, onMounted, watchEffect, onUpdated} from 'vue';
+    import { API_URL } from '../../const';
 
     const props = defineProps({
-        show: Boolean
+        show: Boolean,
+        dataUser: Object
     })
 
-    const emit = defineEmits(['setModal'])
+    const emit = defineEmits(['setModal', 'deleteCover'])
 
-    const state = reactive({
+    const data = reactive({
         editModal: null,
-        displayModal: props.show
+        displayModal: props.show,
+        userData : props.dataUser
     })
     
     onMounted(()=>{
-        state.editModal = new bootstrap.Modal('#editModal', {})
+        data.editModal = new bootstrap.Modal('#editModal', {})
     });
 
     watchEffect(()=>{
-        state.displayModal = props.show
+        data.displayModal = props.show
+        data.userData = props.dataUser
     })
 
     onUpdated(()=>{
-        if(state.displayModal == true){
-            state.editModal.show()
+        if(data.displayModal == true){
+            data.editModal.show()
         }
     })
 
-    function closeModal(event){
-        state.editModal.hide()
+    function closeModal(){
+        data.editModal.hide()
         emit('setModal')
+    }
+
+    function deleteBg(){
+        emit('deleteCover')
     }
 </script>
 
@@ -97,7 +240,7 @@
         position: absolute;
     }
 
-    .uploadWrapper{
+    .picBtnWrapper{
         background-color: rgba(15, 20, 25, 0.75);
         backdrop-filter: blur(4px);
         top: 0;
@@ -109,7 +252,7 @@
         cursor: pointer;
     }
 
-    .uploadWrapper:hover{
+    .picBtnWrapper:hover{
         background-color: rgba(39, 44, 48, 0.75);
     }
 
@@ -135,7 +278,6 @@
     .profileUser{
         width: calc(100% - 7px);
         height: calc(100% - 7px);
-        background-image: url('http://localhost:3000/images/61ced9f0f0923e4fd4bf1cb0accf1baa.jpg');
         background-size: cover;
         background-repeat: no-repeat;
         background-position: center;
@@ -167,117 +309,3 @@
         background-color: rgb(247,249,249);
     }
 </style>
-
-<template>
-    <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true" @click="closeModal()">
-        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" @click.stop>
-            <div class="modal-content">
-                <div class="modal-header pt-2 pb-2 border-bottom-0">
-                    <button class="rounded-circle bgClose bgHover border-0 bg-transparent" type = "button" @click="closeModal()" data-bs-dismiss="modal" aria-label="close">
-                        <IconClose/>
-                    </button>
-                    <div class="flex-fill ms-4">
-                        <h2 class="fs-5 mb-0 fw-bold ptb-2">
-                            Edit profile
-                        </h2>
-                    </div>
-                    <button class="rounded-pill saveButton" type="button">
-                        <span class="ps-2 pe-2 text-white fw-bold">
-                            Save
-                        </span>
-                    </button>
-                </div>
-                <div class="modal-body p-0">
-                    <div class="d-flex flex-column" style="padding-bottom: 64px;">
-                        <div class="ps-1 pe-1">
-                            <div class="w-100 bg-profile">
-                                <div class="position-absolute top-50 start-50 translate-middle uploadBtnSize">
-                                    <div class="square">
-                                        <label class="uploadWrapper rounded-circle" for="bgImgUpload" title="Add photo">
-                                            <IconUpload class="position-absolute top-50 start-50 translate-middle"/>
-                                        </label>
-                                        <input type="file" accept="image/jpeg, image/png, image/jpg" class="uploadField" title="Add photo" id="bgImgUpload">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="w-25 marginProfile">
-                            <div class="w-100 rounded-circle">
-                                <div class="square">
-                                    <div class="position-absolute rounded-circle profileWrapper">
-                                        <div class="position-absolute top-50 start-50 translate-middle rounded-circle profileUser">
-                                            <div class="position-absolute top-50 start-50 translate-middle uploadBtnSize">
-                                                <div class="square">
-                                                    <label class="uploadWrapper rounded-circle" for="profileImgUpload" title="Add photo">
-                                                        <IconUpload class="position-absolute top-50 start-50 translate-middle"/>
-                                                    </label>
-                                                    <input type="file" accept="image/jpeg, image/png, image/jpg" class="uploadField" title="Add photo" id="profileImgUpload">
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="boxPadding">
-                            <div class="form-floating">
-                                <input type="text" class="form-control fs-17" id="editName" placeholder="Name" value="Name">
-                                <label for="editName" class="fc-gray fs-17">
-                                    Name
-                                </label>
-                            </div>
-                        </div>
-                        <div class="boxPadding">
-                            <div class="form-floating">
-                                <textarea id="editBio" class="form-control fs-17" placeholder="Bio" style="height: 100px;"></textarea>
-                                <label for="editName" class="fc-gray fs-17">
-                                    Bio
-                                </label>
-                            </div>
-                        </div>
-                        <div class="boxPadding">
-                            <div class="form-floating">
-                                <input type="text" class="form-control fs-17" id="editLoc" placeholder="Name" value="">
-                                <label for="editLoc" class="fc-gray fs-17">
-                                    Location
-                                </label>
-                            </div>
-                        </div>
-                        <div class="boxPadding">
-                            <div class="form-floating">
-                                <input type="text" class="form-control fs-17" id="editWeb" placeholder="Name" value="">
-                                <label for="editWeb" class="fc-gray fs-17">
-                                    Website
-                                </label>
-                            </div>
-                        </div>
-                        <div class="d-flex flex-column" style="padding: 16px;">
-                            <div class="d-flex">
-                                <span class="fc-gray">
-                                    Birth date
-                                </span>
-                                <span class="ps-1 pe-1 fc-gray">
-                                    ·
-                                </span>
-                                <span class="fc-blue">
-                                    Edit
-                                </span>
-                            </div>
-                            <span class="fs-lh">
-                                December 20, 2003
-                            </span>
-                        </div>
-                        <a href="#" class="boxPadding text-black text-decoration-none switchPro">
-                            <div class="d-flex align-items-center">
-                                <span class="flex-grow-1 fs-lh">
-                                    Switch to professional
-                                </span>
-                                <IconArrowRight style="height: 20px; width: 20px;"/>
-                            </div>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</template>

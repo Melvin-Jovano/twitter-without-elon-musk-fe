@@ -1,12 +1,3 @@
-<script setup>
-    import IconComment from '../../assets/icons/IconComment.vue';
-    import IconLike from '../../assets/icons/IconLike.vue';
-    import IconRetweet from '../../assets/icons/IconRetweet.vue';
-    import IconShare from '../../assets/icons/IconShare.vue';
-    import IconThreeDots from '../../assets/icons/IconThreeDots.vue';
-    import IconView from '../../assets/icons/IconView.vue';
-</script>
-
 <template>
     <div class="tweetBox">
         <article class="ps-3 pe-3">
@@ -15,7 +6,9 @@
                     <div style="width: 48px; height: 48px;">
                         <a href="">
                             <div class="tweetProfileWrapper">
-                                <div class="position-absolute top-50 start-50 translate-middle rounded-circle tweetProfile">
+                                <div class="position-absolute top-50 start-50 translate-middle rounded-circle tweetProfile" v-if="data.userData.photo" :style="{backgroundImage: `url('${API_URL}${data.userData.photo}')`}">
+                                </div>
+                                <div class="position-absolute top-50 start-50 translate-middle rounded-circle tweetProfile" v-else :style="{backgroundImage: `url('${API_URL}/images/default.jpeg')`}">
                                 </div>
                             </div>
                         </a>
@@ -25,11 +18,11 @@
                     <div class="d-flex justify-content-between">
                         <div class="d-flex">
                             <a href="" class="text-black text-decoration-none fw-bold underlineHover">
-                                Name
+                                {{ data.userData.name || "Name" }}
                             </a>
                             <div class="d-flex ms-1">
                                 <a href="" class="text-decoration-none fc-gray">
-                                    @Username
+                                    @{{ data.userData.username || "Username" }}
                                 </a>
                                 <div class="fc-gray ps-1 pe-1">
                                     ·
@@ -42,8 +35,6 @@
                         <div class="rounded-circle threedots bgBiru">
                             <IconThreeDots/>
                         </div>
-                        <!-- <div class=" threedots ">
-                        </div> -->
                     </div>
                     <div>
                         Content
@@ -96,6 +87,29 @@
     </div>
 </template>
 
+<script setup>
+    import { reactive, watchEffect } from 'vue';
+    import IconComment from '../../assets/icons/IconComment.vue';
+    import IconLike from '../../assets/icons/IconLike.vue';
+    import IconRetweet from '../../assets/icons/IconRetweet.vue';
+    import IconShare from '../../assets/icons/IconShare.vue';
+    import IconThreeDots from '../../assets/icons/IconThreeDots.vue';
+    import IconView from '../../assets/icons/IconView.vue';
+    import { API_URL } from '../../const';
+
+    const props = defineProps({
+        dataUser: Object
+    })
+
+    const data = reactive({
+        userData : props.dataUser
+    })
+
+    watchEffect(()=>{
+        data.userData = props.dataUser
+    })
+</script>
+
 <style scoped>
     .tweetBox{
         cursor: pointer;
@@ -129,7 +143,6 @@
 
     .tweetProfile{
         background-color: rgb(207, 217, 222);
-        background-image: url('http://localhost:3000/images/61ced9f0f0923e4fd4bf1cb0accf1baa.jpg');
         background-size: cover;
         background-repeat: no-repeat;
         background-position: center;
