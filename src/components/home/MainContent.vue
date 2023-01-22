@@ -49,7 +49,7 @@
                     </div>
                 </div>
             </div>
-            <div class="content p-2" v-for="posts in getPosts" :key="posts.id">
+            <div class="content p-2" v-for="post in posts" :key="post.id">
                 <div class="content-header p-2">
                     <div class="d-flex">
                         <div class="profile-pict mt-3 m-2">
@@ -70,7 +70,7 @@
                                     <time datetime="" style="color: #536471; font-size: 15px;">13h</time>
                                 </span>
                                 <div id="description">
-                                    {{ posts.content }}
+                                    {{post.content}}
                                 </div>
                             </div>
                             <div class="text-center">
@@ -108,40 +108,45 @@
 </template>
 
 <script setup>
-// import icon
-import IconMedia from '../../assets/icons/IconMedia.vue';
-import IconGif from '../../assets/icons/IconGif.vue';
-import IconPoll from '../../assets/icons/IconPoll.vue';
-import IconMap from '../../assets/icons/IconMap.vue';
-import IconDate from '../../assets/icons/IconDate.vue';
-import IconEmote from '../../assets/icons/IconEmote.vue';
-import IconView from '../../assets/icons/IconView.vue';
-import IconComment from '../../assets/icons/IconComment.vue';
-import IconLike from '../../assets/icons/IconLike.vue';
-import IconRetweet from '../../assets/icons/IconRetweet.vue';
-import IconShare from '../../assets/icons/IconShare.vue'
+    // import icon
+    import IconMedia from '../../assets/icons/IconMedia.vue';
+    import IconGif from '../../assets/icons/IconGif.vue';
+    import IconPoll from '../../assets/icons/IconPoll.vue';
+    import IconMap from '../../assets/icons/IconMap.vue';
+    import IconDate from '../../assets/icons/IconDate.vue';
+    import IconEmote from '../../assets/icons/IconEmote.vue';
+    import IconView from '../../assets/icons/IconView.vue';
+    import IconComment from '../../assets/icons/IconComment.vue';
+    import IconLike from '../../assets/icons/IconLike.vue';
+    import IconRetweet from '../../assets/icons/IconRetweet.vue';
+    import IconShare from '../../assets/icons/IconShare.vue'
 
-// import api
-import { ref } from 'vue';
-import { getAllPosts } from '../../api/posts.js'
-import { API_URL, DEFAULT_PHOTO } from '../../const';
+    // import api
+    import { ref } from 'vue';
+    import { getAllPosts } from '../../api/posts.js'
+    import { API_URL, DEFAULT_PHOTO } from '../../const';
+    import { onMounted } from 'vue';
 
-const page = ref(0);
-const posts = ref([]);
+    const page = ref(0);
+    const posts = ref([]);
 
-async function getPosts() {
-    try {
-        const getPost = await getAllPosts({ page: page.value });
-        if (getPost.data.message === 'get all post success') {
-            posts.value = getPost.data;
+    async function getPosts() {
+        try {
+            const getPosts = await getAllPosts({ page: page.value });
+            if (getPosts.data.message === 'get all post success') {
+                // Di Response API Mu Gdak Ngirim Ini Page Ke Berapa, Jd Aq Komen....
+                // page.value = getPosts.data.data;
+                posts.value = getPosts.data.data;
+                console.log(posts.value);
+            }
+        } catch (error) {
+            console.log(error);
         }
-        console.log(getPost);
-        return getPost;
-    } catch (error) {
-        console.log(error);
     }
-}
-getPosts()
+
+    onMounted(async () => {
+        await getPosts();
+    });
 
 </script>
 
