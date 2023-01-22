@@ -86,6 +86,7 @@
                 chatStores.messages = getChats.data.data.data.reverse();
                 chatStores.name = name;
                 chatStores.photo = photo;
+                chatStores.groupId = groupId;
             }
         } catch (error) {
             return;

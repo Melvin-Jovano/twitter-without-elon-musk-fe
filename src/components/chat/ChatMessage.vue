@@ -26,21 +26,31 @@
         <div class="hv-80 mt-3 overflow-auto">
             <MessageBubble v-for="(chat, idx) in chatStores.messages" :message="chat.content" :time="chat.created_at" :isMe="chat.sender_id === sessionStores.userId" :stacked="idx+2 <= chatStores.messages.length && chatStores.messages[idx+1].sender_id === chat.sender_id" :isFirst="idx === 0" :key="chat.id" />
         </div>
-        <div class="row py-1 px-2 rounded-50px input-wrapper">
-            <div class="col-1">
-                <IconImage />
-            </div>
-            <div class="col-1">
-                <IconGif />
-            </div><div class="col-1">
-                <IconEmote />
-            </div>
-            <div class="col">
-                <input type="text" class="outline-focus-none border-0 bg-transparent form-control-sm form-control text-sm" placeholder="Start a new message">
-            </div>
-            <div class="col-1 text-start">
-                <IconSend />
-            </div>
+        <div>
+            <form action="#" @submit.prevent="sendMessage()" class="row py-1 px-2 rounded-50px input-wrapper">
+                <div class="col-1">
+                    <span class="cursor-pointer">
+                        <IconImage />
+                    </span>
+                </div>
+                <div class="col-1">
+                    <span class="cursor-pointer">
+                        <IconGif />
+                    </span>
+                </div><div class="col-1">
+                    <span class="cursor-pointer">
+                        <IconEmote />
+                    </span>
+                </div>
+                <div class="col">
+                    <input v-model="chatInput" type="text" class="outline-focus-none border-0 bg-transparent form-control-sm form-control text-sm" placeholder="Start a new message">
+                </div>
+                <div class="col-1 text-start">
+                    <button type="submit" :disabled="!(chatInput.length > 0)" class="border-0 cursor-pointer">
+                        <IconSend />
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 </template>
@@ -55,9 +65,41 @@
     import IconGif from '../../assets/icons/IconGif.vue';
     import IconEmote from '../../assets/icons/IconEmote.vue';
     import { API_URL } from '../../const';
+    import {sendChat} from '../../api/chat';
+    import { ref } from 'vue';
+    import { io } from "socket.io-client";
 
+    const socket = io(`ws://localhost:3001`);
+
+    socket.on('connect', () => {
+        // send a message to the server
+        socket.emit("add-chat", 5, "6", { 7: Uint8Array.from([8]) });
+
+        // receive a message from the server
+        socket.on("new-chat", (...args) => {
+            console.log(args);
+        });
+    });
+
+    const chatInput = ref('');
     const chatStores = chat();
     const sessionStores = session();
+
+    async function sendMessage() {
+        try {
+            const createChat = await sendChat({
+                groupId: chatStores.groupId, 
+                senderId: sessionStores.userId,
+                content: chatInput.value
+            });
+            if(createChat.data.message === 'SUCCESS') {
+                chatStores.messages.push(createChat.data.data);
+                chatInput.value = '';
+            }
+        } catch (error) {
+            return;
+        }
+    }
 </script>
 
 <style scoped>

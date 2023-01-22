@@ -23,3 +23,11 @@ export async function getChatLists({limit, lastId}) {
         }
     });
 }
+
+export async function sendChat({groupId, senderId, content}) {
+    return await axios.post(`${API_URL}chat`, {
+        groupId, 
+        senderId, 
+        content
+    });
+}

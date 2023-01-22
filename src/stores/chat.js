@@ -8,8 +8,10 @@ const chat = defineStore('chat', () => {
   const showHeading = ref(true);
   const name = ref('');
   const photo = ref('');
+  const groupId = ref(0);
 
   return {
+    groupId,
     photo,
     name,
     messages,
