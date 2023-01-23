@@ -21,53 +21,63 @@
                     <img src="../../assets/cat.jpg" alt="Profile" class="img">
                 </div>
                 <div class="form-input p-2">
-                    <input type="text" id="input" class="text-input" placeholder="What's happening?">
-                    <div class="media-upload mt-4">
-                        <div class="icon-list d-flex">
-                            <div class="icon m-2">
-                                <label for="file-input">
-                                    <IconMedia />
-                                </label>
-                                <input id="file-input" type="file" />
+                    <form>
+                        <input type="text" class="text-input" accept="image/*" multiple="multiple" @change="previewMultiImage" placeholder="What's happening?">
+                        <!-- <div id="preview" v-if="preview_list.length">
+                            <div v-for="item, index in preview_list" :key="index">
+                                <img :src="item" class="img-fluid" />
                             </div>
-                            <div class="icon m-2">
-                                <IconGif />
-                            </div>
-                            <div class="icon m-2">
-                                <IconPoll />
-                            </div>
-                            <div class="icon m-2">
-                                <IconEmote />
-                            </div>
-                            <div class="icon m-2">
-                                <IconDate />
-                            </div>
-                            <div class="icon m-2">
-                                <IconMap />
+                        </div> -->
+                        <div class="media-upload mt-4">
+                            <div class="icon-list d-flex">
+                                <div class="icon m-2">
+                                    <label for="file-input">
+                                        <IconMedia />
+                                    </label>
+                                    <input id="file-input" type="file" />
+                                </div>
+                                <div class="icon m-2">
+                                    <IconGif />
+                                </div>
+                                <div class="icon m-2">
+                                    <IconPoll />
+                                </div>
+                                <div class="icon m-2">
+                                    <IconEmote />
+                                </div>
+                                <div class="icon m-2">
+                                    <IconDate />
+                                </div>
+                                <div class="icon m-2">
+                                    <IconMap />
+                                </div>
+                                <div class="p-2 float-right">
+                                    <button type="button" class="btn btn-primary text-center fw-bold" @click="createPosts">Tweet</button>
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    </form>
                 </div>
             </div>
             <div class="content p-2" v-for="post in posts" :key="post.id">
                 <div class="content-header p-2">
                     <div class="d-flex">
                         <div class="profile-pict mt-3 m-2">
-                            <img src="../../assets/elonmusk.jpg" alt="Profile" class="img img-fluid">
+                            <img :src="API_URL + DEFAULT_PHOTO" alt="Profile" class="img" />
                         </div>
                         <div class="content-body p-2">
                             <div class="">
                                 <span style="margin: 2px">
-                                    <span id="nickname" style="font-size: 15px; font-weight: 700;">Elon Musk</span>
+                                    <span id="nickname" style="font-size: 15px; font-weight: 700;">{{ post.user.name }}</span>
                                 </span>
                                 <span style="margin: 2px">
-                                    <span id="username" style="color: #536471; font-weight: 400; font-size: 15px;">@elonmuskreal</span>
+                                    <span id="username" style="color: #536471; font-weight: 400; font-size: 15px;">@{{ post.user.username }}</span>
                                 </span>
                                 <span style="margin: 2px">
                                     <span asd>·</span>
                                 </span>
                                 <span style="margin: 2px">
-                                    <time datetime="" style="color: #536471; font-size: 15px;">13h</time>
+                                    <time style="color: #536471; font-size: 15px;">13h</time>
                                 </span>
                             </div>
                             <div v-html="post.content"></div>
@@ -118,12 +128,13 @@
 
     // import api
     import { ref } from 'vue';
-    import { getAllPosts } from '../../api/posts.js'
+    import { getAllPosts, addPosts } from '../../api/posts.js'
     import { API_URL, DEFAULT_PHOTO } from '../../const';
     import { onMounted } from 'vue';
 
     const page = ref(0);
     const posts = ref([]);
+    const newPost = ref([])
 
     async function getPosts() {
         try {
@@ -133,12 +144,43 @@
                 console.log(posts.value);
             }
         } catch (error) {
+            return
+        }
+    }
+
+    async function createPosts() {
+        try {
+            const createNewPost = await addPosts(newPost.value.content);
+            if (createNewPost.data.message === 'Create new post success') {
+                newPost.value.content
+                console.log(newPost.value.content);
+            }
+            console.log(createNewPost);
+        } catch (error) {
             console.log(error);
         }
     }
 
+    // function previewMultiImage(event) {
+    //     let input = event.target;
+    //     let count = input.files.length;
+    //     let index = 0;
+    //     if (input.files) {
+    //         while (count--) {
+    //             let reader = new FileReader();
+    //             reader.onload = (e) => {
+    //                 this.preview_list.push(e.target.result);
+    //             }
+    //             this.image_list.push(input.files[index]);
+    //             reader.readAsDataURL(input.files[index]);
+    //             index++;
+    //         }
+    //     }
+    // }
+
     onMounted(async () => {
         await getPosts();
+        await createPosts();
     });
 
 </script>

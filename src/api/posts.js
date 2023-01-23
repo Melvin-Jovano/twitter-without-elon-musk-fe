@@ -9,3 +9,9 @@ export async function getAllPosts({limit, page}) {
         }
     })
 }
+
+export async function addPosts(content) {
+    return await axios.post(`${API_URL}posts`, {
+        content: content
+    })
+}
