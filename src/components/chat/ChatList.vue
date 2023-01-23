@@ -27,7 +27,7 @@
             </div>
 
             <div v-else>
-                <div v-for="chatList in chatStores.list" :key="chatList.id" @click="selectChatList(chatList.id, chatList.name, chatList.photo)" class="chat-list cursor-pointer p-2 chat-list">
+                <div v-for="chatList in chatStores.list" :key="chatList.id" @click="selectChatList(chatList.id, chatList.name, chatList.photo)" :class="`chat-list cursor-pointer p-2 chat-list ${!chatList.isRead ? 'bg-focus' : ''}`">
                     <table>
                         <tr>
                             <td rowspan="2" class="">
@@ -48,6 +48,11 @@
                                     </span>
                                 </span>
                             </td>
+                            <td v-if="!chatList.isRead" class="px-2">
+                                <div class="bg-primary-twitter rounded-circle notification">
+                                    &nbsp;
+                                </div>
+                            </td>
                         </tr>
                         <tr>
                             <td class="text-muted text-sm">
@@ -58,6 +63,7 @@
                                     {{ chatList.lastChat }}
                                 </span>
                             </td>
+                            
                         </tr>
                     </table>
                 </div>
@@ -74,8 +80,11 @@
     import chat from '../../stores/chat';
     import IconChatSetting from '../../assets/icons/IconChatSetting.vue';
     import IconChatNewChat from '../../assets/icons/IconChatNewChat.vue';
+    import { chatSocket } from '../../main';
+    import session from '../../stores/session';
 
     const chatStores = chat();
+    const sessionStores = session();
     const lastId = ref(null);
 
     async function selectChatList(groupId, name, photo) {
@@ -95,6 +104,22 @@
 
     onMounted(async () => {
         try {
+            chatSocket.socket.on('new-chat-list', async (body) => {
+                if(body.userIds.includes(sessionStores.userId)) {
+                    const getChatList = await getChatLists({limit: 10});
+                    if(getChatList.data.message === 'SUCCESS') {
+                        chatStores.list = getChatList.data.data.data;
+                        lastId.value = getChatList.data.data.lastId;
+                    }
+                }
+            });
+
+            chatSocket.socket.on('new-chat', (body) => {
+                if(chatStores.list.map(chatList => chatList.id).includes(body.group_id)) {
+                    chatStores.chatListKey++;
+                }
+            });
+
             const getChatList = await getChatLists({limit: 10});
             if(getChatList.data.message === 'SUCCESS') {
                 chatStores.list = getChatList.data.data.data;
@@ -109,5 +134,14 @@
 <style scoped>
     .chat-list:hover {
         background-color: rgba(144, 178, 245, 0.15);
+    }
+
+    .bg-focus {
+        background-color: rgba(184, 188, 245, 0.1);
+    }
+
+    .notification {
+        width: 10px;
+        height: 10px;
     }
 </style>

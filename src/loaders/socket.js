@@ -29,6 +29,10 @@ export default class ClientSocket {
                     this.connect();
                 }
             });
+
+            this.socket.on('new-chat', (data) => {
+                
+            });
         });
     }
 }

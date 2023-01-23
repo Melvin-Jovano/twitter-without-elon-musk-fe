@@ -85,11 +85,11 @@
         }
     }
 
-
     onMounted(() => {
         chatSocket.socket.on('new-chat', (body) => {
             if(body.group_id === chatStores.groupId) {
                 chatStores.messages.push(body);
+                chatStores.chatListKey++;
             }
         });
     });
