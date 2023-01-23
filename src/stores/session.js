@@ -2,7 +2,7 @@ import { ref } from 'vue'
 import { defineStore } from 'pinia'
 
 const session = defineStore('session', () => {
-  const userId = ref(3);
+  const userId = ref(parseInt(localStorage.getItem('user')));
 
   return { 
     userId,

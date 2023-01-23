@@ -8,7 +8,7 @@
         </div>
         <div v-else>&nbsp;</div>
     </div>
-    <div v-else class="text-start px-3 py-1">
+    <div v-else :class="`text-start px-3 py-1 ${props.isFirst ? 'mt-3' : ''}`">
         <span :class="`fw-bold text-sm px-3 py-3 bg-whitesmoke ${props.stacked ? 'rounded-50px' : 'bubble-sender'}`">
             {{props.message}}
         </span>

@@ -65,21 +65,8 @@
     import IconGif from '../../assets/icons/IconGif.vue';
     import IconEmote from '../../assets/icons/IconEmote.vue';
     import { API_URL } from '../../const';
-    import {sendChat} from '../../api/chat';
-    import { ref } from 'vue';
-    import { io } from "socket.io-client";
-
-    const socket = io(`ws://localhost:3001`);
-
-    socket.on('connect', () => {
-        // send a message to the server
-        socket.emit("add-chat", 5, "6", { 7: Uint8Array.from([8]) });
-
-        // receive a message from the server
-        socket.on("new-chat", (...args) => {
-            console.log(args);
-        });
-    });
+    import { ref, onMounted } from 'vue';
+    import { chatSocket } from '../../main';
 
     const chatInput = ref('');
     const chatStores = chat();
@@ -87,19 +74,25 @@
 
     async function sendMessage() {
         try {
-            const createChat = await sendChat({
+            chatSocket.socket.emit("add-chat", {
                 groupId: chatStores.groupId, 
                 senderId: sessionStores.userId,
                 content: chatInput.value
             });
-            if(createChat.data.message === 'SUCCESS') {
-                chatStores.messages.push(createChat.data.data);
-                chatInput.value = '';
-            }
+            chatInput.value = '';
         } catch (error) {
             return;
         }
     }
+
+
+    onMounted(() => {
+        chatSocket.socket.on('new-chat', (body) => {
+            if(body.group_id === chatStores.groupId) {
+                chatStores.messages.push(body);
+            }
+        });
+    });
 </script>
 
 <style scoped>
