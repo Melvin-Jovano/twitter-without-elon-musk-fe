@@ -56,7 +56,7 @@
                             <img src="../../assets/elonmusk.jpg" alt="Profile" class="img img-fluid">
                         </div>
                         <div class="content-body p-2">
-                            <div class="mb-3">
+                            <div class="">
                                 <span style="margin: 2px">
                                     <span id="nickname" style="font-size: 15px; font-weight: 700;">Elon Musk</span>
                                 </span>
@@ -69,13 +69,8 @@
                                 <span style="margin: 2px">
                                     <time datetime="" style="color: #536471; font-size: 15px;">13h</time>
                                 </span>
-                                <div id="description">
-                                    {{post.content}}
-                                </div>
                             </div>
-                            <div class="text-center">
-                                <img class="post img-fluid" src="https://pbs.twimg.com/media/FmoGp8jXoBIk7yi?format=jpg&name=900x900" alt="">
-                            </div>
+                            <div v-html="post.content"></div>
                             <div class="content-icon">
                                 <div class="d-flex">
                                     <div class="icon-range d-flex">
@@ -134,8 +129,6 @@
         try {
             const getPosts = await getAllPosts({ page: page.value });
             if (getPosts.data.message === 'get all post success') {
-                // Di Response API Mu Gdak Ngirim Ini Page Ke Berapa, Jd Aq Komen....
-                // page.value = getPosts.data.data;
                 posts.value = getPosts.data.data;
                 console.log(posts.value);
             }
@@ -171,7 +164,7 @@
     border-right: 1px solid rgba(0, 0, 0, 0.1);
 }
 
-.post{
+img .post{
     border-radius: 20px;
 }
 
