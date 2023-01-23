@@ -26,10 +26,8 @@ export async function getChatLists({limit, lastId}) {
     });
 }
 
-export async function sendChat({groupId, senderId, content}) {
-    return await axios.post(`${API_URL}chat`, {
-        groupId, 
-        senderId, 
-        content
+export async function readChat({chatIds}) {
+    return await axios.post(`${API_URL}chat/read`, {
+        chatIds
     });
 }

@@ -5,6 +5,8 @@
         </span>
         <div v-if="!props.stacked" class="my-3 text-xs">
             {{moment(props.time).fromNow()}}
+            <span v-if="props.isSeen && props.isMe">&nbsp;·&nbsp;Seen</span>
+            <span v-if="!props.isSeen && props.isMe">&nbsp;·&nbsp;Sent</span>
         </div>
         <div v-else>&nbsp;</div>
     </div>
@@ -14,6 +16,8 @@
         </span>
         <div v-if="!props.stacked" class="my-3 text-xs">
             {{moment(props.time).fromNow()}}
+            <span v-if="props.isSeen && props.isMe">&nbsp;·&nbsp;Seen</span>
+            <span v-if="!props.isSeen && props.isMe">&nbsp;·&nbsp;Sent</span>
         </div>
         <div v-else>&nbsp;</div>
     </div>
@@ -24,6 +28,10 @@
     import moment from 'moment';
 
     const props = defineProps({
+        isSeen: {
+            type: Boolean,
+            default: () => false
+        },
         isMe: {
             type: Boolean,
             default: () => false
