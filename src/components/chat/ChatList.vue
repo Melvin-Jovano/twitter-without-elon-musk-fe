@@ -82,6 +82,7 @@
     import IconChatNewChat from '../../assets/icons/IconChatNewChat.vue';
     import { chatSocket } from '../../main';
     import session from '../../stores/session';
+    import { scrollTopElement } from '../../utils/util';
 
     const chatStores = chat();
     const sessionStores = session();
@@ -89,15 +90,22 @@
 
     async function selectChatList(groupId, name, photo) {
         try {
-            const getChats = await getChatByGroupId({}, {groupId});
+            const getChats = await getChatByGroupId({limit: 10}, {groupId});
             if(getChats.data.message === 'SUCCESS') {
                 chatStores.showHeading = false;
+                chatStores.messagesLastId = getChats.data.data.lastId;
                 chatStores.messages = getChats.data.data.data.reverse();
                 chatStores.name = name;
                 chatStores.photo = photo;
                 chatStores.groupId = groupId;
+
+                setTimeout(() => {
+                    const chatBubbles = document.getElementById('chat-bubbles');
+                    scrollTopElement(chatBubbles, chatBubbles.scrollHeight);
+                }, 1);
             }
         } catch (error) {
+            console.error(error);
             return;
         }
     }

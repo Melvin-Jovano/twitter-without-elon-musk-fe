@@ -23,7 +23,7 @@
                 <IconInfoVue />
             </div>
         </div>
-        <div class="hv-80 mt-3 overflow-auto">
+        <div class="hv-80 mt-3 overflow-auto" @scroll="scrolledToTop($event.target)" id="chat-bubbles">
             <MessageBubble v-for="(chat, idx) in chatStores.messages" :message="chat.content" :time="chat.created_at" :isMe="chat.sender_id === sessionStores.userId" :stacked="idx+2 <= chatStores.messages.length && chatStores.messages[idx+1].sender_id === chat.sender_id" :isFirst="idx === 0" :key="chat.id" />
         </div>
         <div>
@@ -66,7 +66,9 @@
     import IconEmote from '../../assets/icons/IconEmote.vue';
     import { API_URL } from '../../const';
     import { ref, onMounted } from 'vue';
+    import { getChatByGroupId } from '../../api/chat';
     import { chatSocket } from '../../main';
+    import { scrollTopElement } from '../../utils/util';
 
     const chatInput = ref('');
     const chatStores = chat();
@@ -81,7 +83,18 @@
             });
             chatInput.value = '';
         } catch (error) {
+            console.error(error);
             return;
+        }
+    }
+
+    async function scrolledToTop(div) {
+        if(div.scrollTop === 0 && chatStores.messagesLastId !== null) {
+            const getChats = await getChatByGroupId({limit: 10, lastId: chatStores.messagesLastId}, {groupId: chatStores.groupId});
+            if(getChats.data.message === 'SUCCESS') {
+                chatStores.messagesLastId = getChats.data.data.lastId;
+                chatStores.messages = [...getChats.data.data.data.reverse(), ...chatStores.messages];
+            }
         }
     }
 
@@ -89,7 +102,10 @@
         chatSocket.socket.on('new-chat', (body) => {
             if(body.group_id === chatStores.groupId) {
                 chatStores.messages.push(body);
-                chatStores.chatListKey++;
+                setTimeout(() => {
+                    const chatBubbles = document.getElementById('chat-bubbles');
+                    scrollTopElement(chatBubbles, chatBubbles.scrollHeight);
+                }, 1);
             }
         });
     });
