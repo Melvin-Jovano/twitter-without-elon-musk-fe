@@ -24,7 +24,7 @@
                     <form>
                         <input type="text" class="text-input" accept="image/*" multiple="multiple" @change="previewMultiImage" v-model="newPost" placeholder="What's happening?">
                         <div class="mt-3">
-                            <img class="rounded mx-auto d-block" :src="previewImg" v-if="previewImg" width="400"/>
+                            <img class="rounded mx-auto d-block" :src="API_URL + previewImg" v-if="previewImg" width="400"/>
                         </div>
                         <div class="media-upload mt-4">
                             <div class="icon-list d-flex">
@@ -145,7 +145,7 @@ import IconThreeDots from '../../assets/icons/IconThreeDots.vue'
 
 // import api
 import { ref } from 'vue';
-import { getAllPosts, addPosts } from '../../api/posts.js'
+import { getAllPosts, addPosts, addImg } from '../../api/posts.js'
 import { API_URL, DEFAULT_PHOTO } from '../../const';
 import { onMounted } from 'vue';
 
@@ -153,7 +153,7 @@ const page = ref(0);
 const limit = ref()
 const posts = ref([]);
 const newPost = ref("")
-let previewImg = ref("")
+let previewImg = ref(null)
 
 async function getPosts() {
     try {
@@ -170,32 +170,20 @@ async function getPosts() {
 
 async function createPosts(e) {
     try {
-        e.preventDefault()
-        const createNewPost = await addPosts(newPost.value);
+        e.preventDefault();
+        const createNewPost = await addPosts({content: newPost.value, img: previewImg.value});
         if (createNewPost.data.message === 'Create new post success') {
-            newPost.value
-            previewImg.value
             console.log(newPost.value);
         }
-        console.log(createNewPost);
     } catch (error) {
         console.log(error);
     }
 }
 
 async function uploadImg(e) {
-    const imgName = e.target.files.name
-    newPost.value = imgName
-    previewImg = URL.createObjectURL(e.target.files[0])
-    console.log(previewImg);
+    const uploadImg = await addImg(e.target.files[0]);
+    previewImg.value = uploadImg.data.data;
 }
-
-// function loadMore(){
-//     const limitPerPage = { page: page.value += 1 }
-    
-//     console.log(limitPerPage);
-//     return limitPerPage
-// }
 
 onMounted(async () => {
     await getPosts();
