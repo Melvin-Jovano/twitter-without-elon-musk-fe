@@ -23,6 +23,11 @@ const router = createRouter({
       component: LoginView
     },
     {
+      path: '/',
+      name: 'root',
+      component: LoginView
+    },
+    {
       path: '/message',
       name: 'message',
       component: MessageView
@@ -30,4 +35,18 @@ const router = createRouter({
   ]
 });
 
-export default router
+router.beforeEach((to, from, next) => {
+  const isAuthenticated = (localStorage.getItem('accessToken') !== null && localStorage.getItem('refreshToken') !== null);
+
+  if(!isAuthenticated && (to.name !== 'login' || to.path === '/')) {
+    return next({name: 'login'});
+  }
+
+  if(isAuthenticated && (to.name === 'login' || to.path === '/') && from.name !== 'home') {
+    return next({name: 'home'});
+  }
+
+  return next();
+})
+
+export default router;
