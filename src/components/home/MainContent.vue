@@ -20,21 +20,19 @@
                 <div class="profile-pict p-2">
                     <img src="../../assets/cat.jpg" alt="Profile" class="img">
                 </div>
-                <div class="form-input p-2">
+                <div class="form-input p-2 w-100">
                     <form>
-                        <input type="text" class="text-input" accept="image/*" multiple="multiple" @change="previewMultiImage" placeholder="What's happening?">
-                        <!-- <div id="preview" v-if="preview_list.length">
-                            <div v-for="item, index in preview_list" :key="index">
-                                <img :src="item" class="img-fluid" />
-                            </div>
-                        </div> -->
+                        <input type="text" class="text-input" accept="image/*" multiple="multiple" @change="previewMultiImage" v-model="newPost" placeholder="What's happening?">
+                        <div class="mt-3">
+                            <img class="rounded mx-auto d-block" :src="previewImg" v-if="previewImg" width="400"/>
+                        </div>
                         <div class="media-upload mt-4">
                             <div class="icon-list d-flex">
                                 <div class="icon m-2">
                                     <label for="file-input">
                                         <IconMedia />
                                     </label>
-                                    <input id="file-input" type="file" />
+                                    <input id="file-input" type="file" @change="uploadImg" />
                                 </div>
                                 <div class="icon m-2">
                                     <IconGif />
@@ -52,7 +50,8 @@
                                     <IconMap />
                                 </div>
                                 <div class="p-2 float-right">
-                                    <button type="button" class="btn btn-primary text-center fw-bold" @click="createPosts">Tweet</button>
+                                    <button type="button" class="btn btn-primary text-center fw-bold"
+                                        @click="createPosts">Tweet</button>
                                 </div>
                             </div>
                         </div>
@@ -66,21 +65,37 @@
                             <img :src="API_URL + DEFAULT_PHOTO" alt="Profile" class="img" />
                         </div>
                         <div class="content-body p-2">
-                            <div class="">
-                                <span style="margin: 2px">
-                                    <span id="nickname" style="font-size: 15px; font-weight: 700;">{{ post.user.name }}</span>
-                                </span>
-                                <span style="margin: 2px">
-                                    <span id="username" style="color: #536471; font-weight: 400; font-size: 15px;">@{{ post.user.username }}</span>
-                                </span>
-                                <span style="margin: 2px">
-                                    <span asd>·</span>
-                                </span>
-                                <span style="margin: 2px">
-                                    <time style="color: #536471; font-size: 15px;">13h</time>
-                                </span>
+                            <div class="d-flex justify-content-between">
+                                <div class="d-flex">
+                                    <span style="margin: 2px">
+                                        <span id="nickname" style="font-size: 15px; font-weight: 700;">{{
+                                            post.user.name
+                                        }}</span>
+                                    </span>
+                                    <span style="margin: 2px">
+                                        <span id="username" style="color: #536471; font-weight: 400; font-size: 15px;">@{{
+                                            post.user.username
+                                        }}</span>
+                                    </span>
+                                    <span style="margin: 2px">
+                                        <span asd>·</span>
+                                    </span>
+                                    <span style="margin: 2px">
+                                        <time style="color: #536471; font-size: 15px;">13h</time>
+                                    </span>
+                                </div>
+                                <div class="rounded-circle threedots bgBiru">
+                                    <IconThreeDots />
+                                </div>
                             </div>
-                            <div v-html="post.content"></div>
+                            <a href="#">
+                                <div class='mb-2'>
+                                    <span>{{ post.content }}</span>
+                                </div>
+                                <div class='text-center'>
+                                    <img class='post img-fluid' :src='post.img'>
+                                </div>
+                            </a>
                             <div class="content-icon">
                                 <div class="d-flex">
                                     <div class="icon-range d-flex">
@@ -108,80 +123,83 @@
                     </div>
                 </div>
             </div>
+            <button @click="loadMore">show more reviews</button>
         </div>
     </div>
 </template>
 
 <script setup>
-    // import icon
-    import IconMedia from '../../assets/icons/IconMedia.vue';
-    import IconGif from '../../assets/icons/IconGif.vue';
-    import IconPoll from '../../assets/icons/IconPoll.vue';
-    import IconMap from '../../assets/icons/IconMap.vue';
-    import IconDate from '../../assets/icons/IconDate.vue';
-    import IconEmote from '../../assets/icons/IconEmote.vue';
-    import IconView from '../../assets/icons/IconView.vue';
-    import IconComment from '../../assets/icons/IconComment.vue';
-    import IconLike from '../../assets/icons/IconLike.vue';
-    import IconRetweet from '../../assets/icons/IconRetweet.vue';
-    import IconShare from '../../assets/icons/IconShare.vue'
+// import icon
+import IconMedia from '../../assets/icons/IconMedia.vue';
+import IconGif from '../../assets/icons/IconGif.vue';
+import IconPoll from '../../assets/icons/IconPoll.vue';
+import IconMap from '../../assets/icons/IconMap.vue';
+import IconDate from '../../assets/icons/IconDate.vue';
+import IconEmote from '../../assets/icons/IconEmote.vue';
+import IconView from '../../assets/icons/IconView.vue';
+import IconComment from '../../assets/icons/IconComment.vue';
+import IconLike from '../../assets/icons/IconLike.vue';
+import IconRetweet from '../../assets/icons/IconRetweet.vue';
+import IconShare from '../../assets/icons/IconShare.vue'
+import IconThreeDots from '../../assets/icons/IconThreeDots.vue'
 
-    // import api
-    import { ref } from 'vue';
-    import { getAllPosts, addPosts } from '../../api/posts.js'
-    import { API_URL, DEFAULT_PHOTO } from '../../const';
-    import { onMounted } from 'vue';
+// import api
+import { ref } from 'vue';
+import { getAllPosts, addPosts } from '../../api/posts.js'
+import { API_URL, DEFAULT_PHOTO } from '../../const';
+import { onMounted } from 'vue';
 
-    const page = ref(0);
-    const posts = ref([]);
-    const newPost = ref([])
+const page = ref(0);
+const limit = ref()
+const posts = ref([]);
+const newPost = ref("")
+let previewImg = ref("")
 
-    async function getPosts() {
-        try {
-            const getPosts = await getAllPosts({ page: page.value });
-            if (getPosts.data.message === 'get all post success') {
-                posts.value = getPosts.data.data;
-                console.log(posts.value);
-            }
-        } catch (error) {
-            return
+async function getPosts() {
+    try {
+        const getPosts = await getAllPosts({ page: page.value, limit: limit.value });
+        if (getPosts.data.message === 'get all post success') {
+            
+            posts.value = getPosts.data.data;
+            console.log(posts.value);
         }
+    } catch (error) {
+        return
     }
+}
 
-    async function createPosts() {
-        try {
-            const createNewPost = await addPosts(newPost.value.content);
-            if (createNewPost.data.message === 'Create new post success') {
-                newPost.value.content
-                console.log(newPost.value.content);
-            }
-            console.log(createNewPost);
-        } catch (error) {
-            console.log(error);
+async function createPosts(e) {
+    try {
+        e.preventDefault()
+        const createNewPost = await addPosts(newPost.value);
+        if (createNewPost.data.message === 'Create new post success') {
+            newPost.value
+            previewImg.value
+            console.log(newPost.value);
         }
+        console.log(createNewPost);
+    } catch (error) {
+        console.log(error);
     }
+}
 
-    // function previewMultiImage(event) {
-    //     let input = event.target;
-    //     let count = input.files.length;
-    //     let index = 0;
-    //     if (input.files) {
-    //         while (count--) {
-    //             let reader = new FileReader();
-    //             reader.onload = (e) => {
-    //                 this.preview_list.push(e.target.result);
-    //             }
-    //             this.image_list.push(input.files[index]);
-    //             reader.readAsDataURL(input.files[index]);
-    //             index++;
-    //         }
-    //     }
-    // }
+async function uploadImg(e) {
+    const imgName = e.target.files.name
+    newPost.value = imgName
+    previewImg = URL.createObjectURL(e.target.files[0])
+    console.log(previewImg);
+}
 
-    onMounted(async () => {
-        await getPosts();
-        await createPosts();
-    });
+// function loadMore(){
+//     const limitPerPage = { page: page.value += 1 }
+    
+//     console.log(limitPerPage);
+//     return limitPerPage
+// }
+
+onMounted(async () => {
+    await getPosts();
+});
 
 </script>
 
@@ -193,24 +211,25 @@
     transition: 0.3s;
 }
 
-.content:hover{
+.content:hover {
     background-color: rgba(15, 20, 25, 0.1);
+    cursor: pointer;
 }
 
 .form-content {
     border-bottom: 1px solid rgba(0, 0, 0, 0.1);
 }
 
-.main{
+.main {
     border-left: 1px solid rgba(0, 0, 0, 0.1);
     border-right: 1px solid rgba(0, 0, 0, 0.1);
 }
 
-img .post{
+.post {
     border-radius: 20px;
 }
 
-.tablist-top{
+.tablist-top {
     background-color: rgba(255, 255, 255, 0.884);
     border-bottom: 1px solid rgba(0, 0, 0, 0.1);
     backdrop-filter: blur(10px);
@@ -219,25 +238,27 @@ img .post{
     width: 100%;
 }
 
-.present{
+.present {
     transition: 0.3s;
 }
 
-.present:hover{
+.present:hover {
     background-color: rgba(15, 20, 25, 0.1);
 }
-.text{
+
+.text {
     color: rgb(83, 100, 113);
     font-weight: 500;
     font-size: 15px;
 }
 
-.text-forYou{
-    border-bottom: 4px solid rgb(29, 155, 240);;
+.text-forYou {
+    border-bottom: 4px solid rgb(29, 155, 240);
+    ;
     border-radius: 4px;
 }
 
-.text-input{
+.text-input {
     border: none;
 }
 
@@ -253,23 +274,33 @@ input[type="file"] {
     display: none;
 }
 
+a {
+    color: black;
+    text-decoration: none;
+}
+
 ::placeholder {
     font-size: 20px;
     font-weight: 400;
 }
 
-.img{
+.img {
     width: 50px;
     height: 50px;
     border-radius: 100%;
 }
 
-#count{
+#count {
     padding: 10px;
 }
 
-.icon-range{
+.icon-range {
     margin-right: 50px;
     margin-top: 10px;
+}
+
+.bgBiru:hover {
+    background-color: rgba(29, 155, 240, 0.1);
+    fill: rgb(29, 155, 240) !important;
 }
 </style>

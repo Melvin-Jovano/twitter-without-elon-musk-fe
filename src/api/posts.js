@@ -10,8 +10,18 @@ export async function getAllPosts({limit, page}) {
     })
 }
 
-export async function addPosts(content) {
+export async function getPostsById({limit, page}) {
+    return await axios.get(`${API_URL}posts`)
+}
+
+export async function addPosts({content}) {
     return await axios.post(`${API_URL}posts`, {
         content: content
+    })
+}
+
+export async function addImg(img) {
+    return await axios.post(`${API_URL}post/upload-img`, {
+        img: img
     })
 }
