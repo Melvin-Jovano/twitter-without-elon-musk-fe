@@ -4,7 +4,7 @@ import {refreshToken} from './api/auth.js';
 import axios from 'axios';
 import App from './App.vue';
 import router from './router';
-
+import ClientSocket from './loaders/socket.js';
 import './assets/main.css';
 
 let isRefresh = true;
@@ -54,9 +54,10 @@ axios.interceptors.request.use(
   }
 );
 
-const app = createApp(App)
+const app = createApp(App);
 
-app.use(createPinia())
-app.use(router)
+app.use(createPinia());
+app.use(router);
+app.mount('#app');
 
-app.mount('#app')
+export const chatSocket = new ClientSocket('/chatting', 3001);
