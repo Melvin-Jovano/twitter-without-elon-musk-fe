@@ -1,9 +1,9 @@
 <template>
-    <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true" @click="closeModal()">
+    <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true" @click="closeModal">
         <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" @click.stop>
             <div class="modal-content">
                 <div class="modal-header pt-2 pb-2 border-bottom-0">
-                    <button class="rounded-circle bgClose bgHover border-0 bg-transparent" type = "button" @click="closeModal()" data-bs-dismiss="modal" aria-label="close">
+                    <button class="rounded-circle bgClose bgHover border-0 bg-transparent" type = "button" @click="closeModal" data-bs-dismiss="modal" aria-label="close">
                         <IconClose/>
                     </button>
                     <div class="flex-fill ms-4">
@@ -11,7 +11,7 @@
                             Edit profile
                         </h2>
                     </div>
-                    <button class="rounded-pill saveButton" type="button">
+                    <button class="rounded-pill saveButton" type="button" @click="submitData" ref="submitButton">
                         <span class="ps-2 pe-2 text-white fw-bold">
                             Save
                         </span>
@@ -20,7 +20,7 @@
                 <div class="modal-body p-0">
                     <div class="d-flex flex-column" style="padding-bottom: 64px;">
                         <div class="ps-1 pe-1">
-                            <div class="w-100 bg-profile" v-if="data.userData.cover" :style="{backgroundImage: `url('${API_URL}${data.userData.cover}')`}">
+                            <div class="w-100 bg-profile" v-if="data.editData.coverURL" :style="{backgroundImage: `url('${data.editData.coverURL}')`}">
                                 <div class="position-absolute top-50 start-50 translate-middle uploadBtnSize">
                                     <div class="d-flex">
                                         <div style="min-width: 44px;">
@@ -28,12 +28,33 @@
                                                 <label class="picBtnWrapper rounded-circle" for="bgImgUpload" title="Add photo">
                                                     <IconUpload class="position-absolute top-50 start-50 translate-middle"/>
                                                 </label>
-                                                <input type="file" accept="image/jpeg, image/png, image/jpg" class="uploadField" title="Add photo" id="bgImgUpload">
+                                                <input type="file" accept="image/jpeg, image/png, image/jpg" class="uploadField" title="Add photo" id="bgImgUpload" @change="handleCoverUpload($event)">
                                             </div>
                                         </div>
                                         <div style="min-width: 44px; margin-left: 20px;">
                                             <div class="square">
-                                                <button class="picBtnWrapper rounded-circle border-0" type="button" title="Delete photo" @click="deleteBg">
+                                                <button class="picBtnWrapper rounded-circle border-0" type="button" title="Delete photo" @click="deleteBg" >
+                                                    <IconClose class="position-absolute top-50 start-50 translate-middle"/>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="w-100 bg-profile" v-else-if="data.userData.cover && data.showCover" :style="{backgroundImage: `url('${API_URL}${data.userData.cover}')`}">
+                                <div class="position-absolute top-50 start-50 translate-middle uploadBtnSize">
+                                    <div class="d-flex">
+                                        <div style="min-width: 44px;">
+                                            <div class="square">
+                                                <label class="picBtnWrapper rounded-circle" for="bgImgUpload" title="Add photo">
+                                                    <IconUpload class="position-absolute top-50 start-50 translate-middle"/>
+                                                </label>
+                                                <input type="file" accept="image/jpeg, image/png, image/jpg" class="uploadField" title="Add photo" id="bgImgUpload" @change="handleCoverUpload($event)">
+                                            </div>
+                                        </div>
+                                        <div style="min-width: 44px; margin-left: 20px;">
+                                            <div class="square">
+                                                <button class="picBtnWrapper rounded-circle border-0" type="button" title="Delete photo" @click="handleDeleteCover">
                                                     <IconClose class="position-absolute top-50 start-50 translate-middle"/>
                                                 </button>
                                             </div>
@@ -47,7 +68,7 @@
                                         <label class="picBtnWrapper rounded-circle" for="bgImgUpload" title="Add photo">
                                             <IconUpload class="position-absolute top-50 start-50 translate-middle"/>
                                         </label>
-                                        <input type="file" accept="image/jpeg, image/png, image/jpg" class="uploadField" title="Add photo" id="bgImgUpload">
+                                        <input type="file" accept="image/jpeg, image/png, image/jpg" class="uploadField" title="Add photo" id="bgImgUpload" @change="handleCoverUpload($event)">
                                     </div>
                                 </div>
                             </div>
@@ -56,13 +77,33 @@
                             <div class="w-100 rounded-circle">
                                 <div class="square">
                                     <div class="position-absolute rounded-circle profileWrapper">
-                                        <div class="position-absolute top-50 start-50 translate-middle rounded-circle profileUser" :style="{backgroundImage: `url('${API_URL}${data.userData.photo}')`}">
+                                        <div class="position-absolute top-50 start-50 translate-middle rounded-circle profileUser" v-if="data.editData.photoURL" :style="{backgroundImage: `url('${data.editData.photoURL}')`}">
                                             <div class="position-absolute top-50 start-50 translate-middle uploadBtnSize">
                                                 <div class="square">
                                                     <label class="picBtnWrapper rounded-circle" for="profileImgUpload" title="Add photo">
                                                         <IconUpload class="position-absolute top-50 start-50 translate-middle"/>
                                                     </label>
-                                                    <input type="file" accept="image/jpeg, image/png, image/jpg" class="uploadField" title="Add photo" id="profileImgUpload">
+                                                    <input type="file" accept="image/jpeg, image/png, image/jpg" class="uploadField" title="Add photo" id="profileImgUpload" @change="handlePhotoUpload($event)">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="position-absolute top-50 start-50 translate-middle rounded-circle profileUser" v-else-if="data.userData.photo" :style="{backgroundImage: `url('${API_URL}${data.userData.photo}')`}">
+                                            <div class="position-absolute top-50 start-50 translate-middle uploadBtnSize">
+                                                <div class="square">
+                                                    <label class="picBtnWrapper rounded-circle" for="profileImgUpload" title="Add photo">
+                                                        <IconUpload class="position-absolute top-50 start-50 translate-middle"/>
+                                                    </label>
+                                                    <input type="file" accept="image/jpeg, image/png, image/jpg" class="uploadField" title="Add photo" id="profileImgUpload" @change="handlePhotoUpload($event)">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="position-absolute top-50 start-50 translate-middle rounded-circle profileUser" v-else :style="{backgroundImage: `url('${API_URL}/images/default.jpeg')`}">
+                                            <div class="position-absolute top-50 start-50 translate-middle uploadBtnSize">
+                                                <div class="square">
+                                                    <label class="picBtnWrapper rounded-circle" for="profileImgUpload" title="Add photo">
+                                                        <IconUpload class="position-absolute top-50 start-50 translate-middle"/>
+                                                    </label>
+                                                    <input type="file" accept="image/jpeg, image/png, image/jpg" class="uploadField" title="Add photo" id="profileImgUpload" @change="handlePhotoUpload($event)">
                                                 </div>
                                             </div>
                                         </div>
@@ -72,15 +113,18 @@
                         </div>
                         <div class="boxPadding">
                             <div class="form-floating">
-                                <input type="text" class="form-control fs-17" id="editName" placeholder="Name" v-model="data.userData.name">
+                                <input type="text" class="form-control fs-17 was-validated" id="editName" placeholder="Name" ref="inputName" :value="data.editData.inputName ? data.editData.name : data.userData.name" @input="handleUpdateName($event)" required>
                                 <label for="editName" class="fc-gray fs-17">
                                     Name
                                 </label>
+                                <div id="validationName" class="invalid-feedback">
+                                    Name can't be blank
+                                </div>
                             </div>
                         </div>
                         <div class="boxPadding">
                             <div class="form-floating">
-                                <textarea id="editBio" class="form-control fs-17" placeholder="Bio" style="height: 100px;">{{ data.userData.bio }}</textarea>
+                                <textarea id="editBio" class="form-control fs-17" placeholder="Bio" style="height: 100px;" :value="data.editData.inputBio ? data.editData.bio : data.userData.bio" @input="handleUpdateBio($event)"></textarea>
                                 <label for="editName" class="fc-gray fs-17">
                                     Bio
                                 </label>
@@ -88,7 +132,7 @@
                         </div>
                         <div class="boxPadding">
                             <div class="form-floating">
-                                <input type="text" class="form-control fs-17" id="editLoc" placeholder="Name" v-model="data.userData.location">
+                                <input type="text" class="form-control fs-17" id="editLoc" placeholder="Name" :value="data.editData.inputLocation ? data.editData.location : data.userData.location" @input="handleUpdateLocation($event)">
                                 <label for="editLoc" class="fc-gray fs-17">
                                     Location
                                 </label>
@@ -96,7 +140,7 @@
                         </div>
                         <div class="boxPadding">
                             <div class="form-floating">
-                                <input type="text" class="form-control fs-17" id="editWeb" placeholder="Name">
+                                <input type="text" class="form-control fs-17" id="editWeb" placeholder="Name" disabled>
                                 <label for="editWeb" class="fc-gray fs-17">
                                     Website
                                 </label>
@@ -115,7 +159,7 @@
                                 </span>
                             </div>
                             <span class="fs-lh">
-                                December 20, 2003
+                                {{ data.userData.birthDate || "MMMM DD, YYYY"}}
                             </span>
                         </div>
                         <a href="#" class="boxPadding text-black text-decoration-none switchPro">
@@ -137,48 +181,166 @@
     import IconClose from '../../assets/icons/IconClose.vue'
     import IconUpload from '../../assets/icons/IconUpload.vue'
     import IconArrowRight from '../../assets/icons/IconArrowRight.vue'
-    import {reactive, onMounted, watchEffect, onUpdated} from 'vue';
+    import {reactive, onMounted, watchEffect, onUpdated, ref} from 'vue';
     import { API_URL } from '../../const';
+    import { updateBackground, updatePhoto, deleteBackground, updateUserInfo } from '../../api/profile.js'
+    import moment from 'moment';
 
     const props = defineProps({
         show: Boolean,
         dataUser: Object
     })
 
-    const emit = defineEmits(['setModal', 'deleteCover'])
+    const emit = defineEmits(['setModal', 'getData'])
 
     const data = reactive({
         editModal: null,
-        displayModal: props.show,
-        userData : props.dataUser
+        userData : props.dataUser,
+        editData : {},
+        showCover: true
     })
+    const showModal = ref(props.show)
+    const submitButton = ref(null)
+    const inputName = ref(null)
     
     onMounted(()=>{
         data.editModal = new bootstrap.Modal('#editModal', {})
     });
 
     watchEffect(()=>{
-        data.displayModal = props.show
+        showModal.value = props.show
         data.userData = props.dataUser
+        data.userData.birthDate = formatDate(data.userData.created_at)
     })
 
     onUpdated(()=>{
-        if(data.displayModal == true){
+        if(showModal.value == true){
             data.editModal.show()
         }
     })
 
     function closeModal(){
         data.editModal.hide()
+        data.editData = {}
+        inputName.value.classList.remove('is-invalid')
         emit('setModal')
     }
 
-    function deleteBg(){
-        emit('deleteCover')
+    function formatDate(val){
+        return moment(val).subtract(20, 'years').format('LL')
+    }
+    
+    function handleCoverUpload( event ){
+        data.editData.coverFile = event.target.files[0]
+        data.editData.coverURL = URL.createObjectURL(data.editData.coverFile)
+        data.showCover = true
+    }
+
+    function handlePhotoUpload( event ){
+        data.editData.photoFile = event.target.files[0]
+        data.editData.photoURL = URL.createObjectURL(data.editData.photoFile)
+    }
+
+    function handleDeleteCover(){
+        data.showCover = false
+    }
+
+    function handleUpdateName( event ){
+        data.editData.name = event.target.value
+        data.editData.inputName = true
+        if(data.editData.name.length === 0){
+            event.target.classList.toggle('is-invalid')
+            submitButton.value.classList.toggle('disabled')
+        }
+        else{
+            event.target.classList.remove('is-invalid')
+            submitButton.value.classList.remove('disabled')
+        }
+    }
+
+    function handleUpdateLocation( event ){
+        data.editData.location = event.target.value
+        data.editData.inputLocation = true
+    }
+
+    function handleUpdateBio( event ){
+        data.editData.bio = event.target.value
+        data.editData.inputBio = true
+    }
+    
+    function submitData(){
+        if(data.editData.coverFile){
+            updateCover(data.editData.coverFile)
+        }
+        if(data.editData.photoFile){
+            updateUserPhoto(data.editData)
+        }
+        if(!data.showCover && data.userData.cover){
+            deleteBg(data.userData)
+        }
+        if(!(data.editData.name && data.editData.name.length === 0) || data.editData.bio || data.editData.location){
+            updateUser(data.editData)
+        }
+        closeModal()
+    }
+    
+    async function updateCover(value){
+        try {
+            const updateCover = await updateBackground(value, data.userData.cover)
+            if(updateCover.data.message === "SUCCESS"){
+                data.userData.cover = updateCover.data.data
+                value.coverURL = null
+                value.coverFile = null
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    }
+    
+    async function updateUserPhoto(value){
+        try {
+            const updatePhotoProfile = await updatePhoto(value, data.userData.photo)
+            if (updatePhotoProfile.data.message === "SUCCESS"){
+                data.userData.photo = updatePhotoProfile.data.data
+                value.photoURL = null
+            }
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    async function deleteBg(value){
+        try{
+            if(value.cover){
+                const delCover = await deleteBackground(value.cover)
+                if(delCover.data.message === "SUCCESS"){
+                    data.userData.cover = null
+                    value.deleteCover = false
+                }
+            }
+        }
+        catch(error){
+            console.log(error)
+        }
+    }
+
+    async function updateUser(value){
+        try {
+            const updateInfoUser = await updateUserInfo(value.bio, value.name, value.location)
+            if(updateInfoUser.data.message === "SUCCESS"){
+                emit('getData')
+            }
+        } catch (error) {
+            console.log(error)
+        }
     }
 </script>
 
 <style scoped>
+    .disabled{
+        pointer-events: none;
+    }
+
     #editModal{
         background-color: rgba(0, 0, 0, 0.4);
     }

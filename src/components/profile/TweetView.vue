@@ -56,7 +56,7 @@
                 </div>
                 <div class="d-flex">
                     <div class="me-3 pe-1">
-                        <a href="#" class="text-decoration-none text-black follow">
+                        <a href="#" class="text-decoration-none text-black">
                             <span class="fw-bold fs-14">
                                 0
                             </span>
@@ -66,7 +66,7 @@
                         </a>
                     </div>
                     <div>
-                        <a href="#" class="text-decoration-none text-black follow">
+                        <a href="#" class="text-decoration-none text-black">
                             <span class="fw-bold fs-14">
                                 0
                             </span>
@@ -103,7 +103,7 @@
             </div>
             <TweetBox :dataUser = data.userData />
         </div>
-        <EditModal :show = "data.isShow" :dataUser = data.userData @setModal="closeModal()" @deleteCover="deleteCover()"/>
+        <EditModal :show = "data.isShow" :dataUser = data.userData @setModal="closeModal" @getData="getData" />
     </div>
 </template>
 
@@ -112,8 +112,8 @@
     import IconCalender from '../../assets/icons/IconCalender.vue';
     import TweetBox from './TweetBox.vue'
     import EditModal from './EditModal.vue';
-    import { onMounted, reactive } from 'vue';
-    import { deleteBackground, getUser } from '../../api/profile.js'
+    import { onMounted, onUpdated, reactive } from 'vue';
+    import { getUser } from '../../api/profile.js'
     import { API_URL } from '../../const';
     import moment from 'moment';
     
@@ -140,19 +140,6 @@
             if(user.data.message === "SUCCESS"){
                 data.userData = user.data.data
                 data.userData.joinDate = format_date(data.userData.created_at)
-            }
-        }
-        catch(error){
-            console.log(error)
-        }
-    }
-
-    async function deleteCover(){
-        try{
-            const user = await deleteBackground(data.userData.cover)
-            if(user.data.message === "SUCCESS"){
-                data.userData.cover = ""
-                console.log(data.userData.cover)
             }
         }
         catch(error){
@@ -249,10 +236,6 @@
 
     .fb-500{
         font-weight: 500;
-    }
-
-    .follow:hover{
-        text-decoration: underline !important;;
     }
 
     .head{
