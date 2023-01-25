@@ -1,17 +1,3 @@
-<script setup>
-import IconMedia from '../../assets/icons/IconMedia.vue';
-import IconGif from '../../assets/icons/IconGif.vue';
-import IconPoll from '../../assets/icons/IconPoll.vue';
-import IconMap from '../../assets/icons/IconMap.vue';
-import IconDate from '../../assets/icons/IconDate.vue';
-import IconEmote from '../../assets/icons/IconEmote.vue';
-import IconView from '../../assets/icons/IconView.vue';
-import IconComment from '../../assets/icons/IconComment.vue';
-import IconLike from '../../assets/icons/IconLike.vue';
-import IconRetweet from '../../assets/icons/IconRetweet.vue';
-import IconShare from '../../assets/icons/IconShare.vue'
-</script>
-
 <template>
     <div class="main">
         <div class="tablist-top">
@@ -30,7 +16,7 @@ import IconShare from '../../assets/icons/IconShare.vue'
             </div>
         </div>
         <div class="all-content">
-            <div class="form-content d-flex p-2" style="margin-top: 110px">
+            <div class="form-content d-flex p-2" style="margin-top: 40px">
                 <div class="profile-pict p-2">
                     <img src="../../assets/cat.jpg" alt="Profile" class="img">
                 </div>
@@ -63,14 +49,14 @@ import IconShare from '../../assets/icons/IconShare.vue'
                     </div>
                 </div>
             </div>
-            <div class="content p-2" v-for="index in 10" :key="index">
+            <div class="content p-2" v-for="post in posts" :key="post.id">
                 <div class="content-header p-2">
                     <div class="d-flex">
                         <div class="profile-pict mt-3 m-2">
-                            <img src="../../assets/elonmusk.jpg" alt="Profile" class="img">
+                            <img src="../../assets/elonmusk.jpg" alt="Profile" class="img img-fluid">
                         </div>
                         <div class="content-body p-2">
-                            <div class="mb-3">
+                            <div class="">
                                 <span style="margin: 2px">
                                     <span id="nickname" style="font-size: 15px; font-weight: 700;">Elon Musk</span>
                                 </span>
@@ -83,13 +69,8 @@ import IconShare from '../../assets/icons/IconShare.vue'
                                 <span style="margin: 2px">
                                     <time datetime="" style="color: #536471; font-size: 15px;">13h</time>
                                 </span>
-                                <div id="description">
-                                    Lorem ipsum dolor sit amet, consectetur adipisicing elit. Veniam, voluptate earum nemo alias iure maiores.
-                                </div>
                             </div>
-                            <div class="text-center">
-                                <img class="post img-fluid" src="https://pbs.twimg.com/media/FmoGp8jXoBIk7yi?format=jpg&name=900x900" alt="">
-                            </div>
+                            <div v-html="post.content"></div>
                             <div class="content-icon">
                                 <div class="d-flex">
                                     <div class="icon-range d-flex">
@@ -121,6 +102,47 @@ import IconShare from '../../assets/icons/IconShare.vue'
     </div>
 </template>
 
+<script setup>
+    // import icon
+    import IconMedia from '../../assets/icons/IconMedia.vue';
+    import IconGif from '../../assets/icons/IconGif.vue';
+    import IconPoll from '../../assets/icons/IconPoll.vue';
+    import IconMap from '../../assets/icons/IconMap.vue';
+    import IconDate from '../../assets/icons/IconDate.vue';
+    import IconEmote from '../../assets/icons/IconEmote.vue';
+    import IconView from '../../assets/icons/IconView.vue';
+    import IconComment from '../../assets/icons/IconComment.vue';
+    import IconLike from '../../assets/icons/IconLike.vue';
+    import IconRetweet from '../../assets/icons/IconRetweet.vue';
+    import IconShare from '../../assets/icons/IconShare.vue'
+
+    // import api
+    import { ref } from 'vue';
+    import { getAllPosts } from '../../api/posts.js'
+    import { API_URL, DEFAULT_PHOTO } from '../../const';
+    import { onMounted } from 'vue';
+
+    const page = ref(0);
+    const posts = ref([]);
+
+    async function getPosts() {
+        try {
+            const getPosts = await getAllPosts({ page: page.value });
+            if (getPosts.data.message === 'get all post success') {
+                posts.value = getPosts.data.data;
+                console.log(posts.value);
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    onMounted(async () => {
+        await getPosts();
+    });
+
+</script>
+
 <style scoped>
 /* .tablist */
 
@@ -140,10 +162,9 @@ import IconShare from '../../assets/icons/IconShare.vue'
 .main{
     border-left: 1px solid rgba(0, 0, 0, 0.1);
     border-right: 1px solid rgba(0, 0, 0, 0.1);
-    position: absolute;
 }
 
-.post{
+img .post{
     border-radius: 20px;
 }
 
@@ -152,9 +173,8 @@ import IconShare from '../../assets/icons/IconShare.vue'
     border-bottom: 1px solid rgba(0, 0, 0, 0.1);
     backdrop-filter: blur(10px);
     z-index: 99999999;
-    position: fixed;
-    left: 33%;
-    right: 32%;
+    position: relative;
+    width: 100%;
 }
 
 .present{
