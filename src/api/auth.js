@@ -8,6 +8,17 @@ export async function refreshToken() {
     });
 }
 
+export async function findUserByUsername({username}) {
+    return await axios.get(`${API_URL}user/${username}`);
+}
+
+export async function login({username, password}) {
+    return await axios.post(`${API_URL}auth/login`, {
+        username, 
+        password
+    });
+}
+
 export async function logout() {
     const refreshToken = localStorage.getItem('refreshToken');
     return await axios.delete(`${API_URL}auth/logout`, {

@@ -26,7 +26,7 @@
                 </div>
             </div>
 
-            <div v-else>
+            <div v-else>a
                 <div v-for="chatList in chatStores.list" :key="chatList.id" @click="selectChatList(chatList.id, chatList.name, chatList.photo)" :class="`chat-list cursor-pointer p-2 chat-list ${!chatList.isRead ? 'bg-focus' : ''}`">
                     <table>
                         <tr>
@@ -98,7 +98,6 @@
                 chatStores.name = name;
                 chatStores.photo = photo;
                 chatStores.groupId = groupId;
-
                 setTimeout(() => {
                     const chatBubbles = document.getElementById('chat-bubbles');
                     scrollTopElement(chatBubbles, chatBubbles.scrollHeight);
