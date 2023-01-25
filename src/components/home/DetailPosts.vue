@@ -102,23 +102,23 @@ import IconRetweet from '../../assets/icons/IconRetweet.vue';
 import IconShare from '../../assets/icons/IconShare.vue'
 import IconThreeDots from '../../assets/icons/IconThreeDots.vue'
 import IconTrash from '../../assets/icons/IconTrash.vue'
-
+import router from '../../router/index';
 import { ref, onMounted } from 'vue';
 import { getPostsById } from '../../api/posts.js'
 import HeaderSide from './HeaderSide.vue';
 import SideMenuVue from './SideMenu.vue';
+import {useRoute} from "vue-router";
 
-const postsId = ref([]);
-const id = ref()
+const post = ref();
+const route = useRoute();
 
 async function getPostsId() {
     try {
-        const getPosts = await getPostsById(id.value);
+        const getPosts = await getPostsById(route.params.id);
         if (getPosts.data.message === 'get all post success') {
-            postsId.value = getPosts.data.data;
-            console.log(postsId.value);
+            post.value = getPosts.data.data;
+            console.log('Done asf', post.value);
         }
-        console.log(getPosts);
     } catch (error) {
         console.log(error);
     }

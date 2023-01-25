@@ -101,7 +101,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <router-link :to="'/home/'+ posts.id">
+                            <router-link :to="{name: 'detail', params: {id: post.id}}">
                                 <div class='mb-2'>
                                     <span>{{ post.content }}</span>
                                 </div>
@@ -163,13 +163,10 @@ import { getAllPosts, addPosts, addImg } from '../../api/posts.js'
 import { API_URL, DEFAULT_PHOTO } from '../../const';
 
 const page = ref(0);
-const limit = ref()
+const limit = ref();
 const posts = ref([]);
-const newPost = ref("")
-let previewImg = ref(null)
-
-
-console.log(posts);
+const newPost = ref("");
+let previewImg = ref(null);
 
 async function getPosts() {
     try {
@@ -194,6 +191,11 @@ async function createPosts(e) {
     }
 }
 
+async function uploadImg(e) {
+    const uploadImg = await addImg(e.target.files[0]);
+    previewImg.value = uploadImg.data.data;
+}
+
 // async function deletPost() {
 //     try {
 //         const deletePost = await deleteContent()
@@ -206,10 +208,7 @@ async function createPosts(e) {
 //     }
 // }
 
-async function uploadImg(e) {
-    const uploadImg = await addImg(e.target.files[0]);
-    previewImg.value = uploadImg.data.data;
-}
+
 
 onMounted(async () => {
     await getPosts();
