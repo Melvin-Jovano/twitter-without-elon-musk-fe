@@ -1,5 +1,5 @@
 import axios from "axios";
-import { API_URL } from "../const.js";
+import { API_URL, DEFAULT_PHOTO } from "../const.js";
 
 export async function getUser(){
     const user = await axios.get(`${API_URL}user`)
@@ -28,7 +28,7 @@ export async function deleteBackground(coverLink){
 }
 
 export async function updatePhoto(img, oldImg){
-    if(oldImg){
+    if(oldImg !== DEFAULT_PHOTO){
         deletePhoto(oldImg)
     }
     const formData = new FormData();

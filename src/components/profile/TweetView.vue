@@ -10,7 +10,7 @@
                 {{ data.userData.name || "Name" }}
             </span>
             <span class="fs-13 text-muted mb-1">
-                0 Tweets
+                {{ data.tweetsCount || 0 }} Tweets
             </span>
         </div>
     </div>
@@ -27,38 +27,50 @@
                                     <div class="position-absolute rounded-circle profileWrapper">
                                         <div class="position-absolute top-50 start-50 translate-middle rounded-circle profilePicture" v-if="data.userData.photo" :style="{backgroundImage: `url('${API_URL}${data.userData.photo}')`}">
                                         </div>
-                                        <div class="position-absolute top-50 start-50 translate-middle rounded-circle profilePicture" v-else :style="{backgroundImage: `url('${API_URL}/images/default.jpeg')`}">
+                                        <div class="position-absolute top-50 start-50 translate-middle rounded-circle profilePicture" v-else :style="{backgroundImage: `url('${API_URL}${DEFAULT_PHOTO}')`}">
                                         </div>
                                     </div>
                                 </div>
                             </a>
                         </div>
                     </div>
-                    <a href="#" class="rounded-pill d-flex align-items-center text-decoration-none editProfile bgHover" @click="openModal()">
-                        <div class="fs-6 lh-sm fw-bold text-black">
-                            Edit profile
-                        </div>
-                    </a>
+                    <button type="button" class="rounded-pill d-flex align-items-center text-decoration-none bg-transparent editProfile bgHover fs-6 lh-sm fw-bold text-black" @click="openModal()" style="max-height: 36px;">
+                        Edit profile
+                    </button>
                 </div>
-                <div class="d-flex flex-column mt-1 mb-2 pb-1">
-                    <span class="fw-bold lh-base fs-5 lh-sm">
+                <div class="d-flex flex-column mt-1" style="margin-bottom: 12px;">
+                    <span class="fw-bold fs-5 lh-sm">
                         {{ data.userData.name || "Name" }}
                     </span>
                     <div class="fc-gray fs-15 lh-sm">
                         @{{ data.userData.username || "Username" }}
                     </div>
                 </div>
-                <div class="fc-gray mb-2 pb-1">
-                    <IconCalender class="me-1 align-text-bottom fc-gray"/>
-                    <span>
-                        Joined {{ data.userData.joinDate || "Year Month" }}
+                <div v-if="data.userData.bio" style="margin-bottom: 12px;">
+                    <span class="lh-sm fw-normal">
+                        {{ data.userData.bio }}
                     </span>
+                </div>
+                <div v-else class="mt-1"></div>
+                <div class="d-flex" style="margin-bottom: 12px;line-height: 12px; ">
+                    <div class="fc-gray" style="margin-right: 12px;" v-if="data.userData.location">
+                        <IconLocation class="me-1 align-text-bottom" style="width: 19px; height: 19px; fill: rgb(83, 100, 113) ;"/>
+                        <span>
+                            {{ data.userData.location }}
+                        </span>
+                    </div>
+                    <div class="fc-gray">
+                        <IconCalender class="me-1 align-text-bottom fc-gray"/>
+                        <span>
+                            Joined {{ data.userData.joinDate || "Year Month" }}
+                        </span>
+                    </div>
                 </div>
                 <div class="d-flex">
                     <div class="me-3 pe-1">
-                        <a href="#" class="text-decoration-none text-black">
+                        <a href="/follower" class="text-decoration-none text-black underlineHover">
                             <span class="fw-bold fs-14">
-                                0
+                                {{ data.followingCount || 0 }}
                             </span>
                             <span class="fc-gray fs-14"> 
                                 Following
@@ -66,9 +78,9 @@
                         </a>
                     </div>
                     <div>
-                        <a href="#" class="text-decoration-none text-black">
+                        <a href="/follower" class="text-decoration-none text-black underlineHover">
                             <span class="fw-bold fs-14">
-                                0
+                                {{ data.followerCount || 0 }}
                             </span>
                             <span class="fc-gray fs-14"> 
                                 Follower
@@ -101,7 +113,12 @@
                     </a>
                 </div>
             </div>
-            <TweetBox :dataUser = data.userData />
+            <TweetBox
+            v-if="data.tweetData"
+            v-for="tweet in data.tweetData"
+            :tweet = "tweet"
+            :key="tweet.id"
+            />
         </div>
         <EditModal :show = "data.isShow" :dataUser = data.userData @setModal="closeModal" @getData="getData" />
     </div>
@@ -110,16 +127,23 @@
 <script setup>
     import IconBack from '../../assets/icons/IconBack.vue';
     import IconCalender from '../../assets/icons/IconCalender.vue';
+    import IconLocation from '../../assets/icons/IconLocation.vue'
     import TweetBox from './TweetBox.vue'
     import EditModal from './EditModal.vue';
-    import { onMounted, onUpdated, reactive } from 'vue';
-    import { getUser } from '../../api/profile.js'
-    import { API_URL } from '../../const';
+    import { onMounted, reactive } from 'vue';
+    import { API_URL, DEFAULT_PHOTO } from '../../const.js';
     import moment from 'moment';
-    
+    import { getUser } from '../../api/profile.js';
+    import { getAllPostsById } from '../../api/posts.js';
+    import { getAllFollowers, getAllFollowing } from '../../api/follow.js';
+
     const data = reactive({
         isShow : false,
-        userData : {}
+        userData : {},
+        tweetsCount : 0,
+        tweetData : [],
+        followerCount : 0,
+        followingCount : 0
     })
     
     function openModal(){
@@ -147,8 +171,45 @@
         }
     }
 
+    async function getPosts(){
+        try {
+            const posts = await getAllPostsById({})
+            if(posts.data.message === "SUCCESS"){
+                data.tweetsCount = posts.data.data.length
+                data.tweetData = posts.data.data
+            }
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    async function getFollowers(){
+        try {
+            const followers = await getAllFollowers()
+            if(followers.data.message === "SUCCESS"){
+                data.followerCount = followers.data.data.length
+            }
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    async function getFollowing(){
+        try {
+            const following = await getAllFollowing()
+            if(following.data.message === "SUCCESS"){
+                data.followingCount = following.data.data.length
+            }
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
     onMounted(()=>{
         getData()
+        getPosts()
+        getFollowers()
+        getFollowing()
     })
 </script>
 
@@ -163,7 +224,11 @@
     }
 
     .bgHover:hover{
-        background-color: rgba(15, 20, 25, 0.1);
+        background-color: rgba(15, 20, 25, 0.1) !important;
+    }
+
+    .underlineHover:hover{
+        text-decoration: underline !important;
     }
 
     .fs-13{
@@ -245,6 +310,7 @@
         z-index: 10;
         width: inherit;
         box-sizing: border-box;
+        max-width: 659px;
     }
 
     .mt-53{

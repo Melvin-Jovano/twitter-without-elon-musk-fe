@@ -9,3 +9,12 @@ export async function getAllPosts({limit, page}) {
         }
     })
 }
+
+export async function getAllPostsById({limit, page}){
+    return await axios.get(`${API_URL}user/posts`, {
+        params: {
+            limit: limit || 10,
+            page: page || 1
+        }
+    })
+}

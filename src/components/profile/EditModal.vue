@@ -97,7 +97,7 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="position-absolute top-50 start-50 translate-middle rounded-circle profileUser" v-else :style="{backgroundImage: `url('${API_URL}/images/default.jpeg')`}">
+                                        <div class="position-absolute top-50 start-50 translate-middle rounded-circle profileUser" v-else :style="{backgroundImage: `url('${API_URL}${DEFAULT_PHOTO}')`}">
                                             <div class="position-absolute top-50 start-50 translate-middle uploadBtnSize">
                                                 <div class="square">
                                                     <label class="picBtnWrapper rounded-circle" for="profileImgUpload" title="Add photo">
@@ -113,7 +113,7 @@
                         </div>
                         <div class="boxPadding">
                             <div class="form-floating">
-                                <input type="text" class="form-control fs-17 was-validated" id="editName" placeholder="Name" ref="inputName" :value="data.editData.inputName ? data.editData.name : data.userData.name" @input="handleUpdateName($event)" required>
+                                <input type="text" class="form-control fs-17 was-validated" id="editName" placeholder="Name" ref="inputName" :value="data.editData.inputName ? data.editData.name : data.userData.name" @input="handleUpdateName($event)" maxlength="50" required>
                                 <label for="editName" class="fc-gray fs-17">
                                     Name
                                 </label>
@@ -123,8 +123,8 @@
                             </div>
                         </div>
                         <div class="boxPadding">
-                            <div class="form-floating">
-                                <textarea id="editBio" class="form-control fs-17" placeholder="Bio" style="height: 100px;" :value="data.editData.inputBio ? data.editData.bio : data.userData.bio" @input="handleUpdateBio($event)"></textarea>
+                            <div class="form-floating w-100">
+                                <textarea id="editBio" class="form-control fs-17" placeholder="Bio" style="min-height: 110px;" :value="data.editData.inputBio ? data.editData.bio : data.userData.bio" @input="handleUpdateBio($event)" maxlength="160"></textarea>
                                 <label for="editName" class="fc-gray fs-17">
                                     Bio
                                 </label>
@@ -132,7 +132,7 @@
                         </div>
                         <div class="boxPadding">
                             <div class="form-floating">
-                                <input type="text" class="form-control fs-17" id="editLoc" placeholder="Name" :value="data.editData.inputLocation ? data.editData.location : data.userData.location" @input="handleUpdateLocation($event)">
+                                <input type="text" class="form-control fs-17" id="editLoc" placeholder="Name" :value="data.editData.inputLocation ? data.editData.location : data.userData.location" @input="handleUpdateLocation($event)" maxlength="30">
                                 <label for="editLoc" class="fc-gray fs-17">
                                     Location
                                 </label>
@@ -182,7 +182,7 @@
     import IconUpload from '../../assets/icons/IconUpload.vue'
     import IconArrowRight from '../../assets/icons/IconArrowRight.vue'
     import {reactive, onMounted, watchEffect, onUpdated, ref} from 'vue';
-    import { API_URL } from '../../const';
+    import { API_URL, DEFAULT_PHOTO } from '../../const';
     import { updateBackground, updatePhoto, deleteBackground, updateUserInfo } from '../../api/profile.js'
     import moment from 'moment';
 
@@ -273,7 +273,7 @@
             updateCover(data.editData.coverFile)
         }
         if(data.editData.photoFile){
-            updateUserPhoto(data.editData)
+            updateUserPhoto(data.editData.photoFile)
         }
         if(!data.showCover && data.userData.cover){
             deleteBg(data.userData)

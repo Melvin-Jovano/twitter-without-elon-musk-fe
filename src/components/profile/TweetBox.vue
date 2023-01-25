@@ -6,9 +6,9 @@
                     <div style="width: 48px; height: 48px;">
                         <a href="">
                             <div class="tweetProfileWrapper">
-                                <div class="position-absolute top-50 start-50 translate-middle rounded-circle tweetProfile" v-if="data.userData.photo" :style="{backgroundImage: `url('${API_URL}${data.userData.photo}')`}">
+                                <div class="position-absolute top-50 start-50 translate-middle rounded-circle tweetProfile" v-if="data.userData.user.photo" :style="{backgroundImage: `url('${API_URL}${data.userData.user.photo}')`}">
                                 </div>
-                                <div class="position-absolute top-50 start-50 translate-middle rounded-circle tweetProfile" v-else :style="{backgroundImage: `url('${API_URL}/images/default.jpeg')`}">
+                                <div class="position-absolute top-50 start-50 translate-middle rounded-circle tweetProfile" v-else :style="{backgroundImage: `url('${API_URL}${DEFAULT_PHOTO}')`}">
                                 </div>
                             </div>
                         </a>
@@ -18,17 +18,17 @@
                     <div class="d-flex justify-content-between">
                         <div class="d-flex">
                             <a href="" class="text-black text-decoration-none fw-bold underlineHover">
-                                {{ data.userData.name || "Name" }}
+                                {{ data.userData.user.name || "Name" }}
                             </a>
                             <div class="d-flex ms-1">
                                 <a href="" class="text-decoration-none fc-gray">
-                                    @{{ data.userData.username || "Username" }}
+                                    @{{ data.userData.user.username || "Username" }}
                                 </a>
                                 <div class="fc-gray ps-1 pe-1">
                                     ·
                                 </div>
                                 <a href="" class="text-decoration-none fc-gray underlineHover">
-                                    0m
+                                    {{ data.userData.uploadTime }}
                                 </a>
                             </div>
                         </div>
@@ -36,8 +36,8 @@
                             <IconThreeDots/>
                         </div>
                     </div>
-                    <div>
-                        Content
+                    <div v-html="data.userData.content">
+                        
                     </div>
                     <div class="d-flex mt-12">
                         <div class="d-flex flex-fill align-items-center">
@@ -95,19 +95,25 @@
     import IconShare from '../../assets/icons/IconShare.vue';
     import IconThreeDots from '../../assets/icons/IconThreeDots.vue';
     import IconView from '../../assets/icons/IconView.vue';
-    import { API_URL } from '../../const';
+    import { API_URL, DEFAULT_PHOTO } from '../../const';
+    import moment from 'moment';
 
-    const props = defineProps({
-        dataUser: Object
-    })
+    const props = defineProps([
+        "tweet"
+    ])
 
     const data = reactive({
-        userData : props.dataUser
+        userData : props.tweet,
     })
 
     watchEffect(()=>{
-        data.userData = props.dataUser
+        data.userData = props.tweet
+        data.userData.uploadTime = formatTime(data.userData.created_at)
     })
+
+    function formatTime(val){
+        return moment(val).startOf('minutes').fromNow()
+    }
 </script>
 
 <style scoped>
@@ -178,6 +184,7 @@
         display: flex;
         justify-content: center;
         align-items: center;
+        fill: rgb(83, 100, 113);
     }
     
     .bgBiru:hover{
