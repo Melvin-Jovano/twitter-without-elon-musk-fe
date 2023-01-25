@@ -10,8 +10,8 @@ export async function getAllPosts({limit, page}) {
     })
 }
 
-export async function getPostsById({limit, page}) {
-    return await axios.get(`${API_URL}posts`)
+export async function getPostsById(id) {
+    return await axios.get(`${API_URL}posts/${id}`)
 }
 
 export async function addPosts({content, img}) {
@@ -28,3 +28,11 @@ export async function addImg(img) {
         headers: { "Content-Type": "multipart/form-data" },
     });
 }
+
+// export async function deleteContent(id) {
+//     return await axios.delete(`${API_URL}posts/${id}`, {
+//         data : {
+//             id: id
+//         }
+//     })
+// }

@@ -84,18 +84,31 @@
                                         <time style="color: #536471; font-size: 15px;">13h</time>
                                     </span>
                                 </div>
-                                <div class="rounded-circle threedots bgBiru">
-                                    <IconThreeDots />
+                                <div class="rounded-circle threedots bgBiru" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                                    <IconTrash />
+                                </div>
+                                <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-body">
+                                                <h3>Delete Tweet?</h3>
+                                                <p>This can’t be undone and it will be removed from your profile, the timeline of any accounts that follow you, and from
+                                                Twitter search results.</p>
+                                                <button class="btn btn-danger" @click="deletPost">Delete</button>
+                                                <button class="btn btn-white" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                            <a href="#">
+                            <router-link :to="'/home/'+ posts.id">
                                 <div class='mb-2'>
                                     <span>{{ post.content }}</span>
                                 </div>
                                 <div class='text-center'>
                                     <img class='post img-fluid' :src='API_URL + post.img '>
                                 </div>
-                            </a>
+                            </router-link>
                             <div class="content-icon">
                                 <div class="d-flex">
                                     <div class="icon-range d-flex">
@@ -142,12 +155,12 @@ import IconLike from '../../assets/icons/IconLike.vue';
 import IconRetweet from '../../assets/icons/IconRetweet.vue';
 import IconShare from '../../assets/icons/IconShare.vue'
 import IconThreeDots from '../../assets/icons/IconThreeDots.vue'
+import IconTrash from '../../assets/icons/IconTrash.vue'
 
 // import api
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import { getAllPosts, addPosts, addImg } from '../../api/posts.js'
 import { API_URL, DEFAULT_PHOTO } from '../../const';
-import { onMounted } from 'vue';
 
 const page = ref(0);
 const limit = ref()
@@ -155,12 +168,14 @@ const posts = ref([]);
 const newPost = ref("")
 let previewImg = ref(null)
 
+
+console.log(posts);
+
 async function getPosts() {
     try {
         const getPosts = await getAllPosts({ page: page.value, limit: limit.value });
         if (getPosts.data.message === 'get all post success') {
             posts.value = getPosts.data.data;
-            console.log(posts.value);
         }
     } catch (error) {
         return
@@ -178,6 +193,18 @@ async function createPosts(e) {
         console.log(error);
     }
 }
+
+// async function deletPost() {
+//     try {
+//         const deletePost = await deleteContent()
+//         if (deletePost.data.message === 'Post deleted successfully') {
+//             posts.value.id = deletePost.data.data
+//             console.log(posts.value.id);
+//         }
+//     } catch (error) {
+//         console.log(error);
+//     }
+// }
 
 async function uploadImg(e) {
     const uploadImg = await addImg(e.target.files[0]);
@@ -220,7 +247,7 @@ onMounted(async () => {
     background-color: rgba(255, 255, 255, 0.884);
     border-bottom: 1px solid rgba(0, 0, 0, 0.1);
     backdrop-filter: blur(10px);
-    z-index: 99999999;
+    /* z-index: 99999999; */
     position: relative;
     width: 100%;
 }

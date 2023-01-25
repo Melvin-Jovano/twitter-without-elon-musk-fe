@@ -2,6 +2,7 @@
 import MainContentVue from '../components/home/MainContent.vue';
 import HeaderSide from '../components/home/HeaderSide.vue';
 import SideMenuVue from '../components/home/SideMenu.vue';
+import DetailPosts from '../components/home/DetailPosts.vue';
 </script>
 
 <template>
@@ -11,6 +12,7 @@ import SideMenuVue from '../components/home/SideMenu.vue';
                 <HeaderSide />
             </div>
             <div class="col-6">
+                <!-- <DetailPosts /> -->
                 <MainContentVue />
             </div>
             <div class="col-3">
