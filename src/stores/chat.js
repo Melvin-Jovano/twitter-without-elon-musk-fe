@@ -1,10 +1,11 @@
-import { ref } from 'vue'
-import { defineStore } from 'pinia'
+import { ref } from 'vue';
+import { defineStore } from 'pinia';
 
 const chat = defineStore('chat', () => {
-  const messages = ref(null);
+  const messages = ref([]);
   const messagesLastId = ref([]);
   const list = ref([]);
+  const listLastId = ref(null);
   const chatListKey = ref(0);
   const showHeading = ref(true);
   const name = ref('');
@@ -13,6 +14,7 @@ const chat = defineStore('chat', () => {
 
   return {
     messagesLastId,
+    listLastId,
     groupId,
     photo,
     name,

@@ -24,7 +24,7 @@
             </div>
         </div>
         <div class="hv-80 mt-3 overflow-auto" @scroll="scrolledToTop($event.target)" id="chat-bubbles">
-            <MessageBubble v-for="(chat, idx) in chatStores.messages" :message="chat.content" :time="chat.created_at" :isMe="chat.sender_id === sessionStores.userId" :stacked="idx+2 <= chatStores.messages.length && chatStores.messages[idx+1].sender_id === chat.sender_id" :isFirst="idx === 0" :key="chat.id" />
+            <MessageBubble v-for="(chat, idx) in chatStores.messages" :message="chat.content" :time="chat.created_at" :isMe="chat.sender_id === sessionStores.userId" :stacked="idx+2 <= chatStores.messages.length && chatStores.messages[idx+1].sender_id === chat.sender_id" :isFirst="idx === 0" :key="chat.id" :isSeen="chat.is_read"/>
         </div>
         <div>
             <form action="#" @submit.prevent="sendMessage()" class="row py-1 px-2 rounded-50px input-wrapper">
@@ -107,6 +107,15 @@
                     scrollTopElement(chatBubbles, chatBubbles.scrollHeight);
                 }, 1);
             }
+        });
+
+        chatSocket.socket.on('seen-chat', (chatIds) => {
+            chatStores.messages = chatStores.messages.map(chat => {
+                if(chatIds.includes(chat.id)) {
+                    chat.is_read = true;
+                }
+                return chat;
+            });
         });
     });
 </script>
