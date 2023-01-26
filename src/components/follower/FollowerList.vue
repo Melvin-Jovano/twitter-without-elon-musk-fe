@@ -16,16 +16,16 @@
             </div>
         </div>
         <div class="d-flex">
-            <button href="/follower" class="border-0 bg-transparent flex-fill text-decoration-none text-black d-flex justify-content-center align-items-center pse-16 bgHover" @click="selected = true">
+            <router-link to="/profile/follower" class="flex-fill text-decoration-none d-flex justify-content-center align-items-center pse-16 bgHover">
                 <div class="pt-3 pb-3 fb-500 fc-gray" :class="{menuClicked : selected}">
                     Followers
                 </div>
-            </button>
-            <button href="" class="border-0 bg-transparent flex-fill text-decoration-none d-flex justify-content-center align-items-center pse-16 bgHover" @click="selected = false">
+            </router-link>
+            <router-link to="/profile/following" class="flex-fill text-decoration-none d-flex justify-content-center align-items-center pse-16 bgHover">
                 <div class="pt-3 pb-3 fc-gray fb-500" :class="{menuClicked : !selected}">
                     Following
                 </div>
-            </button>
+            </router-link>
         </div>
     </div>
     <div style="margin-top: 120px;" >
@@ -50,6 +50,7 @@
 <script setup>
     import IconBack from '../../assets/icons/IconBack.vue';
     import { reactive, onMounted, ref, watchEffect } from 'vue';
+    import { useRoute } from 'vue-router';
     import { getUser } from '../../api/profile';
     import FollowerItem from './FollowerItem.vue';
     import { getAllFollowers, getAllFollowing } from '../../api/follow.js'
@@ -61,8 +62,19 @@
         followingData : [],
         followerAndFollowing : []
     })
-
+    
     const selected = ref(true)
+    const route = useRoute()
+
+    watchEffect(()=>{
+        getFollowEachOther()
+        if(route.name == "follower"){
+            selected.value = true
+        }
+        else if(route.name == "following"){
+            selected.value = false
+        }
+    })
 
     function getFollowEachOther(){
         try {
@@ -78,9 +90,6 @@
         }
     }
 
-    watchEffect(()=>{
-        getFollowEachOther()
-    })
 
     async function getData(){
         try{

@@ -1,5 +1,6 @@
 <template>
-    <div class="d-flex align-items-center head">
+    <RouterView/>
+    <div class="d-flex align-items-center head" v-if="showComp">
         <div class="flex-shrink-1 me-4 pe-2">
             <div class="rounded-circle backButton bgHover">
                 <IconBack/>
@@ -14,7 +15,7 @@
             </span>
         </div>
     </div>
-    <div class="d-flex flex-column mt-53">
+    <div class="d-flex flex-column mt-53" v-if="showComp">
         <div class="d-flex flex-column">
             <div class="w-100 bg-profile" v-if="data.userData.cover" :style="{backgroundImage: `url('${API_URL}${data.userData.cover}')`}"></div>
             <div class="w-100 bg-profile" v-else></div>
@@ -68,24 +69,24 @@
                 </div>
                 <div class="d-flex">
                     <div class="me-3 pe-1">
-                        <a href="/follower" class="text-decoration-none text-black underlineHover">
+                        <router-link to="/profile/following" class="text-decoration-none text-black underlineHover">
                             <span class="fw-bold fs-14">
                                 {{ data.followingCount || 0 }}
                             </span>
-                            <span class="fc-gray fs-14"> 
+                            <span class="fc-gray fs-14">
                                 Following
                             </span>
-                        </a>
+                        </router-link>
                     </div>
                     <div>
-                        <a href="/follower" class="text-decoration-none text-black underlineHover">
+                        <router-link to="/profile/follower" class="text-decoration-none text-black underlineHover">
                             <span class="fw-bold fs-14">
                                 {{ data.followerCount || 0 }}
                             </span>
-                            <span class="fc-gray fs-14"> 
+                            <span class="fc-gray fs-14">
                                 Follower
                             </span>
-                        </a>
+                        </router-link>
                     </div>
                 </div>
             </div>
@@ -130,7 +131,8 @@
     import IconLocation from '../../assets/icons/IconLocation.vue'
     import TweetBox from './TweetBox.vue'
     import EditModal from './EditModal.vue';
-    import { onMounted, reactive } from 'vue';
+    import { onMounted, reactive, ref, watchEffect } from 'vue';
+    import { useRoute } from 'vue-router';
     import { API_URL, DEFAULT_PHOTO } from '../../const.js';
     import moment from 'moment';
     import { getUser } from '../../api/profile.js';
@@ -144,6 +146,14 @@
         tweetData : [],
         followerCount : 0,
         followingCount : 0
+    })
+
+    const showComp = ref(true)
+    const router = useRoute()
+    watchEffect(()=>{
+        if(router.name == "follower" || router.name == "following"){
+            showComp.value = false
+        }
     })
     
     function openModal(){
