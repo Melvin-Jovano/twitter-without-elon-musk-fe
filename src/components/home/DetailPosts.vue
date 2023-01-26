@@ -9,22 +9,22 @@
                     <div class="content-header p-2">
                         <div class="d-flex">
                             <div class="profile-pict mt-3 m-2">
-                                <img :src="API_URL" alt="Profile" class="img" />
+                                <img v-if="postId !== null" :src="API_URL + postId.user.photo" alt="Profile" class="img" />
                             </div>
                             <div class="content-body p-2">
                                 <div class="d-flex justify-content-between">
                                     <div class="d-flex">
                                         <span style="margin: 2px">
-                                            <span id="nickname" style="font-size: 15px; font-weight: 700;">nickname</span>
+                                            <span v-if="postId !== null" id="nickname" style="font-size: 15px; font-weight: 700;">{{postId.user.name}}</span>
                                         </span>
                                         <span style="margin: 2px">
-                                            <span id="username" style="color: #536471; font-weight: 400; font-size: 15px;">@username</span>
+                                            <span v-if="postId !== null" id="username" style="color: #536471; font-weight: 400; font-size: 15px;">@{{postId.user.username}}</span>
                                         </span>
                                         <span style="margin: 2px">
                                             <span asd>·</span>
                                         </span>
                                         <span style="margin: 2px">
-                                            <time style="color: #536471; font-size: 15px;">13h</time>
+                                            <time v-if="postId !== null" style="color: #536471; font-size: 15px;">{{moment(postId.created_at).fromNow()}}</time>
                                         </span>
                                     </div>
                                     <div class="rounded-circle threedots bgBiru" data-bs-toggle="modal" data-bs-target="#exampleModal">
@@ -48,10 +48,10 @@
                                     </div>
                                 </div>
                                 <div class='mb-2'>
-                                    <span>{{ postId.content }}</span>
+                                    <span v-if="postId !== null">{{ postId.content }}</span>
                                 </div>
                                 <div class='text-center'>
-                                    <img class='post img-fluid' :src='API_URL + postId.img'>
+                                    <img v-if="postId !== null && postId.img !== null" class='post img-fluid' :src='API_URL + postId.img'>
                                 </div>
                                 <div class="content-icon">
                                     <div class="d-flex">
@@ -89,6 +89,7 @@
 </template>
 
 <script setup>
+import moment from 'moment';
 import IconMedia from '../../assets/icons/IconMedia.vue';
 import IconGif from '../../assets/icons/IconGif.vue';
 import IconPoll from '../../assets/icons/IconPoll.vue';
@@ -110,9 +111,8 @@ import HeaderSide from './HeaderSide.vue';
 import SideMenuVue from './SideMenu.vue';
 import {useRoute} from "vue-router";
 
-const postId = ref([]);
+const postId = ref(null);
 
-console.log(postId);
 const route = useRoute();
 
 async function getPostsId() {
@@ -120,7 +120,6 @@ async function getPostsId() {
         const getPosts = await getPostsById(route.params.id);
         if (getPosts.data.message === 'get all post success') {
             postId.value = getPosts.data.data;
-            console.log('Done asf', postId.value);
         }
     } catch (error) {
         console.log(error);
