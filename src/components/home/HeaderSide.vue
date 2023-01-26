@@ -60,18 +60,18 @@
                 <button type="button" class="btn btn-primary btn-lg text-center fw-bold">Tweet</button>
             </div>
         </aside>
-        <section class="content-wrapper" style="margin-top: 20px">
+        <section class="p-2 pt-1 content-wrapper" style="margin-top: 20px">
             <div class="d-flex mt-3">
                 <div class="row">
-                    <div class="col">
+                    <div class="col-3">
                         <img :src="API_URL + sessionStores.photo" alt="Profile" class="img">
                     </div>
-                    <div class="col">
+                    <div class="col-6">
                         <span id="name fw-bold">{{sessionStores.name}}</span>
                         <p id="username">@{{sessionStores.username}}</p>
                     </div>
                     <div class="col">
-                        <div>
+                        <div class="cursor-pointer">
                             <IconThreeDots />
                         </div>
                     </div>
@@ -140,10 +140,6 @@
     .navbar-list:hover{
         border-radius: 50px 50px 50px 50px;
         background-color: rgba(15, 20, 25, 0.1);
-    }
-
-    .content-wrapper{
-        padding: 10px;
     }
 
     .content-wrapper:hover{

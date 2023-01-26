@@ -84,6 +84,7 @@
     import session from '../stores/session';
 
     const username = ref('');
+    const isLogin = ref(true);
     const password = ref('');
     const sessionStores = session();
     const isUsernameFound = ref(false);
