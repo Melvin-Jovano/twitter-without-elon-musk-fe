@@ -29,10 +29,6 @@ export async function addImg(img) {
     });
 }
 
-// export async function deleteContent(id) {
-//     return await axios.delete(`${API_URL}posts/${id}`, {
-//         data : {
-//             id: id
-//         }
-//     })
-// }
+export async function deleteContent(id) {
+    return await axios.delete(`${API_URL}posts/${id}`)
+}

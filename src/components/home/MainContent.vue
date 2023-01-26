@@ -27,31 +27,32 @@
                             <img class="rounded mx-auto d-block" :src="API_URL + previewImg" v-if="previewImg" width="400" />
                         </div>
                         <div class="media-upload mt-4">
-                            <div class="icon-list d-flex">
-                                <div class="icon m-2">
-                                    <label for="file-input">
-                                        <IconMedia />
-                                    </label>
-                                    <input id="file-input" type="file" @change="uploadImg" />
-                                </div>
-                                <div class="icon m-2">
-                                    <IconGif />
-                                </div>
-                                <div class="icon m-2">
-                                    <IconPoll />
-                                </div>
-                                <div class="icon m-2">
-                                    <IconEmote />
-                                </div>
-                                <div class="icon m-2">
-                                    <IconDate />
-                                </div>
-                                <div class="icon m-2">
-                                    <IconMap />
+                            <div class="d-flex justify-content-between">
+                                <div class="icon-list d-flex">
+                                    <div class="icon m-2">
+                                        <label for="file-input">
+                                            <IconMedia />
+                                        </label>
+                                        <input id="file-input" type="file" @change="uploadImg" />
+                                    </div>
+                                    <div class="icon m-2">
+                                        <IconGif />
+                                    </div>
+                                    <div class="icon m-2">
+                                        <IconPoll />
+                                    </div>
+                                    <div class="icon m-2">
+                                        <IconEmote />
+                                    </div>
+                                    <div class="icon m-2">
+                                        <IconDate />
+                                    </div>
+                                    <div class="icon m-2">
+                                        <IconMap />
+                                    </div>
                                 </div>
                                 <div class="p-2 float-right">
-                                    <button type="button" class="btn btn-primary text-center fw-bold"
-                                        @click="createPosts">Tweet</button>
+                                    <button type="button" class="btn btn-primary text-center fw-bold" @click="createPosts" :disabled="isDisabled(newPost)">Tweet</button>
                                 </div>
                             </div>
                         </div>
@@ -94,7 +95,7 @@
                                                 <h3>Delete Tweet?</h3>
                                                 <p>This can’t be undone and it will be removed from your profile, the timeline of any accounts that follow you, and from
                                                 Twitter search results.</p>
-                                                <button class="btn btn-danger" @click="deletPost">Delete</button>
+                                                <button class="btn btn-danger" type="submit" @click="deletPost(post.id)">Delete</button>
                                                 <button class="btn btn-white" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
                                             </div>
                                         </div>
@@ -159,14 +160,20 @@ import IconTrash from '../../assets/icons/IconTrash.vue'
 
 // import api
 import { ref, onMounted } from 'vue';
-import { getAllPosts, addPosts, addImg } from '../../api/posts.js'
+import { getAllPosts, addPosts, addImg, deleteContent } from '../../api/posts.js'
 import { API_URL, DEFAULT_PHOTO } from '../../const';
+import { useRoute } from "vue-router";
 
 const page = ref(0);
 const limit = ref();
 const posts = ref([]);
 const newPost = ref("");
+const route = useRoute();
+const delet = ref([])
 let previewImg = ref(null);
+
+
+// console.log(posts);
 
 async function getPosts() {
     try {
@@ -196,19 +203,21 @@ async function uploadImg(e) {
     previewImg.value = uploadImg.data.data;
 }
 
-// async function deletPost() {
-//     try {
-//         const deletePost = await deleteContent()
-//         if (deletePost.data.message === 'Post deleted successfully') {
-//             posts.value.id = deletePost.data.data
-//             console.log(posts.value.id);
-//         }
-//     } catch (error) {
-//         console.log(error);
-//     }
-// }
+async function deletPost(id) {
+    try {
+        const deletePost = await deleteContent(id)
+        if (deletePost.data.message === 'Post deleted successfully') {
+            delet.value = deletePost.data.data
+            console.log(delet.value);
+        }
+    } catch (error) {
+        console.log(error);
+    }
+}
 
-
+function isDisabled() {
+    return newPost.value.length <= 0
+}
 
 onMounted(async () => {
     await getPosts();
@@ -315,5 +324,13 @@ a {
 .bgBiru:hover {
     background-color: rgba(29, 155, 240, 0.1);
     fill: rgb(29, 155, 240) !important;
+}
+
+.btn-primary{
+    background-color: rgb(29, 155, 240);
+    border: none;
+    border-radius: 50px;
+    padding: 10px;
+    width: 90px;
 }
 </style>

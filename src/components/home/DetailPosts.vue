@@ -57,19 +57,19 @@
                                     <div class="d-flex">
                                         <div class="icon-range d-flex">
                                             <IconComment />
-                                            <span id="count">35</span>
+                                            <span id="count">0</span>
                                         </div>
                                         <div class="icon-range d-flex">
                                             <IconRetweet />
-                                            <span id="count">35</span>
+                                            <span id="count">0</span>
                                         </div>
                                         <div class="icon-range d-flex">
                                             <IconLike />
-                                            <span id="count">35</span>
+                                            <span id="count">0</span>
                                         </div>
                                         <div class="icon-range d-flex">
                                             <IconView />
-                                            <span id="count">35</span>
+                                            <span id="count">0</span>
                                         </div>
                                         <div class="icon-range d-flex">
                                             <IconShare />
@@ -106,13 +106,13 @@ import IconTrash from '../../assets/icons/IconTrash.vue'
 
 import { API_URL, DEFAULT_PHOTO } from '../../const';
 import { ref, onMounted } from 'vue';
-import { getPostsById } from '../../api/posts.js'
+import { getPostsById, deleteContent } from '../../api/posts.js'
 import HeaderSide from './HeaderSide.vue';
 import SideMenuVue from './SideMenu.vue';
 import {useRoute} from "vue-router";
 
 const postId = ref(null);
-
+const delet = ref()
 const route = useRoute();
 
 async function getPostsId() {
@@ -120,6 +120,18 @@ async function getPostsId() {
         const getPosts = await getPostsById(route.params.id);
         if (getPosts.data.message === 'get all post success') {
             postId.value = getPosts.data.data;
+        }
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+async function deletPost(id) {
+    try {
+        const deletePost = await deleteContent(id.value)
+        if (deletePost.data.message === 'Post deleted successfully') {
+            delet.value = deletePost.data.data
+            console.log(delet.value);
         }
     } catch (error) {
         console.log(error);
