@@ -13,6 +13,10 @@ body{
   background-color: rgb(29, 155, 240);
 }
 
+.text-primary-twitter {
+  color: rgb(29, 155, 240);
+}
+
 .text-sm {
   font-size: .9rem;
 }

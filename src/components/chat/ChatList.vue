@@ -125,8 +125,8 @@
 
     onMounted(async () => {
         try {
-            // const a = await logout();
-            // localStorage.clear();
+            const a = await logout();
+            localStorage.clear();
 
             chatSocket.socket.on('new-chat-list', async (body) => {
                 if(body.userIds.includes(sessionStores.userId)) {
