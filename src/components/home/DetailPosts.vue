@@ -5,7 +5,7 @@
                 <HeaderSide />
             </div>
             <div class="col-6">
-                <div class="content p-2" v-for="post in postsId" :key="post.id">
+                <div class="content p-2">
                     <div class="content-header p-2">
                         <div class="d-flex">
                             <div class="profile-pict mt-3 m-2">
@@ -48,10 +48,10 @@
                                     </div>
                                 </div>
                                 <div class='mb-2'>
-                                    <span>deskripsi</span>
+                                    <span>{{ postId.content }}</span>
                                 </div>
                                 <div class='text-center'>
-                                    <img class='post img-fluid' :src='API_URL'>
+                                    <img class='post img-fluid' :src='API_URL + postId.img'>
                                 </div>
                                 <div class="content-icon">
                                     <div class="d-flex">
@@ -102,27 +102,31 @@ import IconRetweet from '../../assets/icons/IconRetweet.vue';
 import IconShare from '../../assets/icons/IconShare.vue'
 import IconThreeDots from '../../assets/icons/IconThreeDots.vue'
 import IconTrash from '../../assets/icons/IconTrash.vue'
-import router from '../../router/index';
+
+import { API_URL, DEFAULT_PHOTO } from '../../const';
 import { ref, onMounted } from 'vue';
 import { getPostsById } from '../../api/posts.js'
 import HeaderSide from './HeaderSide.vue';
 import SideMenuVue from './SideMenu.vue';
 import {useRoute} from "vue-router";
 
-const post = ref();
+const postId = ref([]);
+
+console.log(postId);
 const route = useRoute();
 
 async function getPostsId() {
     try {
         const getPosts = await getPostsById(route.params.id);
         if (getPosts.data.message === 'get all post success') {
-            post.value = getPosts.data.data;
-            console.log('Done asf', post.value);
+            postId.value = getPosts.data.data;
+            console.log('Done asf', postId.value);
         }
     } catch (error) {
         console.log(error);
     }
 }
+
 
 onMounted(async () => {
     await getPostsId();
