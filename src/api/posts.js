@@ -9,3 +9,26 @@ export async function getAllPosts({limit, page}) {
         }
     })
 }
+
+export async function getPostsById(id) {
+    return await axios.get(`${API_URL}posts/${id}`)
+}
+
+export async function addPosts({content, img}) {
+    return await axios.post(`${API_URL}posts`, {
+        content, 
+        img
+    })
+}
+
+export async function addImg(img) {
+    const data = new FormData();
+    data.append('img', img);
+    return await axios.post(`${API_URL}post/upload-img`, data, {
+        headers: { "Content-Type": "multipart/form-data" },
+    });
+}
+
+export async function deleteContent(id) {
+    return await axios.delete(`${API_URL}posts/${id}`)
+}
