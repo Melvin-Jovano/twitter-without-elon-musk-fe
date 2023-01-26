@@ -83,10 +83,10 @@
     import router from '../router';
     import session from '../stores/session';
 
-    const username = ref('justeen');
+    const username = ref('');
     const password = ref('');
     const sessionStores = session();
-    const isUsernameFound = ref(true);
+    const isUsernameFound = ref(false);
 
     async function checkUsername() {
         try {
@@ -105,17 +105,18 @@
     async function createSession() {
         try {
             const signIn = await login({username: username.value, password: password.value});
+
             if(signIn.data.message === 'SUCCESS') {
                 localStorage.setItem('accessToken', signIn.data.data.accessToken);
                 localStorage.setItem('refreshToken', signIn.data.data.refreshToken);
                 sessionStores.userId = signIn.data.data.userId;
                 sessionStores.photo = signIn.data.data.photo;
+                sessionStores.name = signIn.data.data.name;
                 sessionStores.username = signIn.data.data.username;
-                console.log(sessionStores.userId, sessionStores.photo);
-                await router.push({name: 'home'});
+                return await router.push({name: 'home'});
             }
         } catch (error) {
-            return;
+            return alert('No User Found');
         }
     }
 

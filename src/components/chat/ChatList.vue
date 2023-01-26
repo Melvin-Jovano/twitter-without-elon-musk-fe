@@ -82,6 +82,7 @@
     import { chatSocket } from '../../main';
     import session from '../../stores/session';
     import { scrollTopElement } from '../../utils/util';
+    import { logout } from '../../api/auth';
 
     const chatStores = chat();
     const sessionStores = session();
@@ -124,6 +125,9 @@
 
     onMounted(async () => {
         try {
+            // const a = await logout();
+            // localStorage.clear();
+
             chatSocket.socket.on('new-chat-list', async (body) => {
                 if(body.userIds.includes(sessionStores.userId)) {
                     const getChatList = await getChatLists({limit: 10});
