@@ -1,5 +1,5 @@
 <template>
-    <div class="col-4 hv-95 overflow-auto">
+    <div class="col-4 hv-95 overflow-auto" @scroll="scrolledToTop($event.target)" id="chat-lists">
         <div class="row px-2 mb-4">
             <div class="col-8">
                 <h4>Messages</h4>
@@ -26,7 +26,7 @@
                 </div>
             </div>
 
-            <div v-else>
+            <div v-else>a
                 <div v-for="chatList in chatStores.list" :key="chatList.id" @click="selectChatList(chatList.id, chatList.name, chatList.photo)" :class="`chat-list cursor-pointer p-2 chat-list ${!chatList.isRead ? 'bg-focus' : ''}`">
                     <table>
                         <tr>
@@ -48,7 +48,7 @@
                                     </span>
                                 </span>
                             </td>
-                            <td v-if="!chatList.isRead" class="px-2">
+                            <td v-if="!chatList.isRead && chatList.senderId !== sessionStores.userId" class="px-2">
                                 <div class="bg-primary-twitter rounded-circle notification">
                                     &nbsp;
                                 </div>
@@ -63,7 +63,6 @@
                                     {{ chatList.lastChat }}
                                 </span>
                             </td>
-                            
                         </tr>
                     </table>
                 </div>
@@ -73,8 +72,8 @@
 </template>
 
 <script setup>
-    import {getChatByGroupId, getChatLists} from '../../api/chat';
-    import { onMounted, ref } from 'vue';
+    import {getChatByGroupId, getChatLists, readChat} from '../../api/chat';
+    import { onMounted } from 'vue';
     import { API_URL } from '../../const';
     import moment from 'moment';
     import chat from '../../stores/chat';
@@ -83,10 +82,20 @@
     import { chatSocket } from '../../main';
     import session from '../../stores/session';
     import { scrollTopElement } from '../../utils/util';
+    import { logout } from '../../api/auth';
 
     const chatStores = chat();
     const sessionStores = session();
-    const lastId = ref(null);
+
+    async function scrolledToTop(div) {
+        if(div.scrollTop + div.clientHeight >= div.scrollHeight && chatStores.listLastId !== null) {
+            const getChatList = await getChatLists({limit: 10, lastId: chatStores.listLastId});
+            if(getChatList.data.message === 'SUCCESS') {
+                chatStores.list.push(...getChatList.data.data.data);
+                chatStores.listLastId = getChatList.data.data.lastId;
+            }
+        }
+    }
 
     async function selectChatList(groupId, name, photo) {
         try {
@@ -98,10 +107,14 @@
                 chatStores.name = name;
                 chatStores.photo = photo;
                 chatStores.groupId = groupId;
-
                 setTimeout(() => {
                     const chatBubbles = document.getElementById('chat-bubbles');
                     scrollTopElement(chatBubbles, chatBubbles.scrollHeight);
+                    const chatsNotRead = chatStores.messages.filter(chat => !chat.is_read && chat.sender_id !== sessionStores.userId).map(chat => chat.id);
+                    if(chatsNotRead.length > 0) {
+                        chatSocket.socket.emit('read-chat', chatsNotRead);
+                    }
+                    chatStores.chatListKey++;
                 }, 1);
             }
         } catch (error) {
@@ -112,12 +125,15 @@
 
     onMounted(async () => {
         try {
+            // const a = await logout();
+            // localStorage.clear();
+
             chatSocket.socket.on('new-chat-list', async (body) => {
                 if(body.userIds.includes(sessionStores.userId)) {
                     const getChatList = await getChatLists({limit: 10});
                     if(getChatList.data.message === 'SUCCESS') {
                         chatStores.list = getChatList.data.data.data;
-                        lastId.value = getChatList.data.data.lastId;
+                        chatStores.listLastId = getChatList.data.data.lastId;
                     }
                 }
             });
@@ -131,7 +147,7 @@
             const getChatList = await getChatLists({limit: 10});
             if(getChatList.data.message === 'SUCCESS') {
                 chatStores.list = getChatList.data.data.data;
-                lastId.value = getChatList.data.data.lastId;
+                chatStores.listLastId = getChatList.data.data.lastId;
             }
         } catch (error) {
             return;

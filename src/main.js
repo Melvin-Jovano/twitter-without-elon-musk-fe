@@ -6,6 +6,7 @@ import App from './App.vue';
 import router from './router';
 import ClientSocket from './loaders/socket.js';
 import './assets/main.css';
+import piniPluginPersistedState from 'pinia-plugin-persistedstate';
 
 let isRefresh = true;
 
@@ -56,7 +57,9 @@ axios.interceptors.request.use(
 
 const app = createApp(App);
 
-app.use(createPinia());
+const pinia = createPinia();
+pinia.use(piniPluginPersistedState);
+app.use(pinia);
 app.use(router);
 app.mount('#app');
 

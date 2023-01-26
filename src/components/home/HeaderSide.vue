@@ -64,14 +64,16 @@
             <div class="d-flex mt-3">
                 <div class="row">
                     <div class="col">
-                        <img src="../../assets/cat.jpg" alt="Profile" class="img">
+                        <img :src="API_URL + sessionStores.photo" alt="Profile" class="img">
                     </div>
                     <div class="col">
-                        <span id="name fw-bold">Ambatukam</span>
-                        <p id="username">@username</p>
+                        <span id="name fw-bold">{{sessionStores.name}}</span>
+                        <p id="username">@{{sessionStores.username}}</p>
                     </div>
                     <div class="col">
-                        <IconThreeDots />
+                        <div>
+                            <IconThreeDots />
+                        </div>
                     </div>
                 </div>
             </div>
@@ -90,8 +92,10 @@
     import IconMore from '../../assets/icons/IconMore.vue';
     import IconTwitter from '../../assets/icons/IconTwitter.vue';
     import IconThreeDots from '../../assets/icons/IconThreeDots.vue';
+    import session from '../../stores/session';
+    import { API_URL } from '../../const';
 
-
+    const sessionStores = session();
 </script>
 
 <style scoped>
