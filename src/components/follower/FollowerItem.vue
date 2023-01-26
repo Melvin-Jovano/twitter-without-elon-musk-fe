@@ -29,13 +29,9 @@
                         </div>
                     </div>
                     <div class="d-flex align-items-center">
-                        <div v-if="isFollowed" class="d-flex" style="margin-left: 12px; min-width: 97px;">
-                            <button type="button" class="rounded-pill d-flex align-items-center text-decoration-none bg-transparent followingBtn followingTxt" :class="{unfollowBtn : hover}" @mouseover="hover = true" @mouseleave="hover = false">
-                                {{ hover ? "Unfollow" : "Following" }}
-                            </button>
-                        </div>
+                        <FollowingButton v-if="isFollowed" :id="data.followerItem" @reloadData="reloadData"/>
                         <div v-else-if="!isFollowed" class="d-flex" style="margin-left: 12px;">
-                            <button type="button" class="rounded-pill d-flex align-items-center text-decoration-none followBtn followTxt">
+                            <button type="button" class="rounded-pill d-flex align-items-center text-decoration-none followBtn followTxt" @click="follow(data.followerItem)">
                                 Follow
                             </button>
                         </div>
@@ -57,7 +53,9 @@
 <script setup>
     import { API_URL, DEFAULT_PHOTO } from '../../const';
     import IconThreeDots from '../../assets/icons/IconThreeDots.vue';
-    import { reactive, watchEffect, ref, onMounted } from 'vue';
+    import { reactive, ref, getCurrentInstance, onMounted } from 'vue';
+    import FollowingButton from './FollowingButton.vue';
+    import { followUser } from '../../api/follow.js';
 
     const props = defineProps([
         "follower",
@@ -65,25 +63,44 @@
     ])
 
     const data = reactive({
-        followerData : props.follower,
-        followerFollowing : props.followerFollowing
+        followerData : props.follower.follower,
+        followerFollowing : props.followerFollowing,
+        followerItem : null
     })
 
-    const hover = ref(false)
-    const isFollowed = ref(false)
+    const emit = defineEmits(["reloadData"])
 
-    watchEffect(()=>{
-        data.followerData = props.follower.follower
-        data.followerFollowing = props.followerFollowing
+    const isFollowed = ref(false)
+    const comp = getCurrentInstance()
+
+    onMounted(()=>{
+        data.followerItem = comp.vnode.key
         showFollowed(data.followerData)
     })
-
+    
+    function reloadData(){
+        isFollowed.value = false
+        emit("reloadData")
+    }
+    
     function showFollowed(val){
         data.followerFollowing.forEach(element => {
             if(val.username == element.follower.username){
                 isFollowed.value = true
             }
         });
+    }
+
+    async function follow(val){
+        try {
+            const newFollow = await followUser(val)
+            if (newFollow.data.message === "SUCCESS"){
+                isFollowed.value = true
+                emit('reloadData')
+            }
+        } catch (error) {
+            console.log(error)
+        }
     }
 </script>
 
@@ -94,13 +111,6 @@
     .followersItem:hover{
         background-color: rgba(0, 0, 0, 0.03);
         cursor: pointer;
-    }
-
-    .unfollowBtn{
-        background-color: rgba(244, 33, 46, 0.1) !important;
-        border-color: rgb(253, 201, 206);
-        color: rgb(244, 33, 46) !important;
-        font-weight: 700;
     }
 
     .followerProfileWrapper{
@@ -146,20 +156,6 @@
         font-size: 14px;
         line-height: 16px;
         color: white;
-        font-weight: 700;
-    }
-
-    .followingBtn{
-        min-width: 32px;
-        min-height: 32px;
-        padding: 0 16px;
-        border: 1px solid rgb(207, 217, 222);
-    }
-
-    .followingTxt{
-        font-size: 14px;
-        line-height: 16px;
-        color: rgb(15, 20, 25);
         font-weight: 700;
     }
 

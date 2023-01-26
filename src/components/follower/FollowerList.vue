@@ -33,23 +33,25 @@
         v-if="data.followerData && selected"
         v-for="follower in data.followerData"
         :follower = "follower"
-        :key="follower.id"
+        :key="follower.follower_id"
         :followerFollowing="data.followerAndFollowing"
+        @reload-data="reloadData"
         />
 
         <FollowingItem
         v-else-if="data.followingData && !selected"
         v-for="following in data.followingData"
         :following = "following"
-        :key="following.id"
+        :key="following.user_id"
         :followerFollowing="data.followerAndFollowing"
+        @reload-data="getFollowing"
         />
     </div>
 </template>
 
 <script setup>
     import IconBack from '../../assets/icons/IconBack.vue';
-    import { reactive, onMounted, ref, watchEffect } from 'vue';
+    import { reactive, onMounted, ref, watchEffect, onBeforeUpdate, onBeforeMount } from 'vue';
     import { useRoute } from 'vue-router';
     import { getUser } from '../../api/profile';
     import FollowerItem from './FollowerItem.vue';
@@ -66,30 +68,46 @@
     const selected = ref(true)
     const route = useRoute()
 
-    watchEffect(()=>{
+    onBeforeUpdate(()=>{
         getFollowEachOther()
+    })
+
+    watchEffect(()=>{
         if(route.name == "follower"){
             selected.value = true
+            getFollowers()
+            getFollowing()
         }
         else if(route.name == "following"){
             selected.value = false
+            getFollowers()
+            getFollowing()
         }
     })
 
+    function reloadData(){
+        getAllFollowing()
+        getAllFollowers()
+        getFollowEachOther()
+    }
+
     function getFollowEachOther(){
         try {
+            data.followerAndFollowing = []
             data.followerData.forEach(follower => {
                 data.followingData.forEach(following => {
                     if(follower.follower.username == following.user.username){
-                        data.followerAndFollowing.push(follower)
+                        if(!data.followerAndFollowing.includes(follower)){
+                            data.followerAndFollowing.push(follower)
+                        }
                     }
                 })
             });
+            return data.followerAndFollowing
         } catch (error) {
             console.log(error)
         }
     }
-
 
     async function getData(){
         try{
@@ -127,8 +145,6 @@
 
     onMounted(()=>{
         getData()
-        getFollowers()
-        getFollowing()
         getFollowEachOther()
     })
 </script>
