@@ -8,6 +8,14 @@ export async function refreshToken() {
     });
 }
 
+export async function signUp({birthday, password, username}) {
+    return await axios.put(`${API_URL}auth/register`, {
+        birthday, 
+        password, 
+        username
+    });
+}
+
 export async function findUserByUsername({username}) {
     return await axios.get(`${API_URL}user/${username}`);
 }

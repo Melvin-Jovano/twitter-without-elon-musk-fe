@@ -92,7 +92,7 @@
         try {
             const findUser = await findUserByUsername({username: username.value});
             if(findUser.data.message === 'SUCCESS') {
-                if(findUser.data.data.id !== undefined) {
+                if(findUser.data.data !== null) {
                     return isUsernameFound.value = true;
                 }
                 alert('No User Found');
