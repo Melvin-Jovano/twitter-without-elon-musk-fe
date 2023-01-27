@@ -17,6 +17,15 @@ export async function getAllPosts({limit, lastId}) {
     })
 }
 
+export async function getAllPostsById({limit, page}){
+    return await axios.get(`${API_URL}userposts`, {
+        params:{
+            limit : limit || 10,
+            page : page || 1
+        }
+    })
+}
+
 export async function getPostsById(id) {
     return await axios.get(`${API_URL}posts/${id}`)
 }

@@ -3,6 +3,7 @@ import HomeView from '../views/HomeView.vue';
 import LoginView from '../views/LoginView.vue';
 import ProfileView from '../views/ProfileView.vue';
 import MessageView from '../views/MessageView.vue';
+import FollowerList from '../components/follower/FollowerList.vue'
 import RegisterView from '../views/RegisterView.vue';
 import DetailPosts from '../components/home/DetailPosts.vue';
 
@@ -29,6 +30,18 @@ const router = createRouter({
       path: '/profile',
       name: 'profile',
       component: ProfileView,
+      children:[
+        {
+          path: '/profile/follower',
+          name: 'follower',
+          component: FollowerList
+        },
+        {
+          path: '/profile/following',
+          name: 'following',
+          component: FollowerList
+        }
+      ],
       meta: {
         middleware: [checkSession]
       }
