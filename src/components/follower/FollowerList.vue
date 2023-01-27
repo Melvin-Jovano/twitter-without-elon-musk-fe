@@ -30,7 +30,7 @@
     </div>
     <div style="margin-top: 120px;" >
         <FollowerItem
-        v-if="data.followerData && selected"
+        v-if="data.followerData.length >0 && data.followerAndFollowing.length > 0 && selected"
         v-for="follower in data.followerData"
         :follower = "follower"
         :key="follower.follower_id"
@@ -51,7 +51,7 @@
 
 <script setup>
     import IconBack from '../../assets/icons/IconBack.vue';
-    import { reactive, onMounted, ref, watchEffect, onBeforeUpdate, onBeforeMount } from 'vue';
+    import { reactive, ref, watchEffect, onBeforeUpdate } from 'vue';
     import { useRoute } from 'vue-router';
     import { getUser } from '../../api/profile';
     import FollowerItem from './FollowerItem.vue';
@@ -93,17 +93,18 @@
 
     function getFollowEachOther(){
         try {
-            data.followerAndFollowing = []
-            data.followerData.forEach(follower => {
-                data.followingData.forEach(following => {
-                    if(follower.follower.username == following.user.username){
-                        if(!data.followerAndFollowing.includes(follower)){
-                            data.followerAndFollowing.push(follower)
+            if(data.followerData.length > 0 && data.followingData.length > 0){
+                data.followerAndFollowing = []
+                data.followerData.forEach(follower => {
+                    data.followingData.forEach(following => {
+                        if(follower.follower.username == following.user.username){
+                            if(!data.followerAndFollowing.includes(follower)){
+                                data.followerAndFollowing.push(follower)
+                            }
                         }
-                    }
-                })
-            });
-            return data.followerAndFollowing
+                    })
+                });
+            }
         } catch (error) {
             console.log(error)
         }
@@ -126,6 +127,7 @@
             const followers = await getAllFollowers()
             if(followers.data.message === "SUCCESS"){
                 data.followerData = followers.data.data
+                return data.followerData
             }
         } catch (error) {
             console.log(error)
@@ -137,16 +139,14 @@
             const following = await getAllFollowing()
             if(following.data.message === "SUCCESS"){
                 data.followingData = following.data.data
+                return data.followingData
             }
         } catch (error) {
             console.log(error)
         }
     }
 
-    onMounted(()=>{
-        getData()
-        getFollowEachOther()
-    })
+    getData()
 </script>
 
 <style scoped>

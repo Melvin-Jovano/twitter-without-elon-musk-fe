@@ -73,10 +73,8 @@
     const isFollowed = ref(false)
     const comp = getCurrentInstance()
 
-    onMounted(()=>{
-        data.followerItem = comp.vnode.key
-        showFollowed(data.followerData)
-    })
+    data.followerItem = comp.vnode.key
+    showFollowed(data.followerData)
     
     function reloadData(){
         isFollowed.value = false

@@ -131,7 +131,7 @@
     import IconLocation from '../../assets/icons/IconLocation.vue'
     import TweetBox from './TweetBox.vue'
     import EditModal from './EditModal.vue';
-    import { onMounted, reactive, ref, watchEffect } from 'vue';
+    import { reactive, ref, watchEffect } from 'vue';
     import { useRoute } from 'vue-router';
     import { API_URL, DEFAULT_PHOTO } from '../../const.js';
     import moment from 'moment';
@@ -215,12 +215,10 @@
         }
     }
 
-    onMounted(()=>{
-        getData()
-        getPosts()
-        getFollowers()
-        getFollowing()
-    })
+    getData()
+    getPosts()
+    getFollowers()
+    getFollowing()
 </script>
 
 <style scoped>
