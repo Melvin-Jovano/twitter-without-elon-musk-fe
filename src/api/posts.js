@@ -1,11 +1,18 @@
 import axios from "axios";
 import {API_URL} from '../const.js';
 
-export async function getAllPosts({limit, page}) {
+export async function getAllPosts({limit, lastId}) {
+    let lastIdFilter = {};
+    if(lastId !== undefined) {
+        lastIdFilter = {
+            last_id: lastId
+        }
+    }
+
     return await axios.get(`${API_URL}posts`, {
         params: {
             limit: limit || 10,
-            page: page || 1
+            ...lastIdFilter
         }
     })
 }

@@ -1,5 +1,5 @@
 <template>
-    <div class="main overflow-auto hv-99">
+    <div class="main overflow-auto hv-99" @scroll="scrolledToTop($event.target)">
         <div class="tablist-top">
             <h5 class="fw-bold m-3">Home</h5>
             <div class="tablist justify-content-between d-flex">
@@ -86,9 +86,11 @@
                                         <time style="color: #536471; font-size: 15px;">13h</time>
                                     </span>
                                 </div>
-                                <div class="rounded-circle threedots bgBiru" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                                
+                                <div v-if="sessionStores.userId === post.user.id" class="rounded-circle threedots bgBiru" data-bs-toggle="modal" data-bs-target="#exampleModal">
                                     <IconTrash />
                                 </div>
+
                                 <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                                     <div class="modal-dialog">
                                         <div class="modal-content">
@@ -108,26 +110,26 @@
                                     <span>{{ post.content }}</span>
                                 </div>
                                 <div class='text-center'>
-                                    <img class='post img-fluid' :src='API_URL + post.img '>
+                                    <img v-if="post.img !== null" class='post img-fluid' :src='API_URL + post.img '>
                                 </div>
                             </router-link>
                             <div class="content-icon">
                                 <div class="d-flex">
                                     <div class="icon-range d-flex">
                                         <IconComment />
-                                        <span id="count">35</span>
+                                        <span id="count">0</span>
                                     </div>
                                     <div class="icon-range d-flex">
                                         <IconRetweet />
-                                        <span id="count">35</span>
+                                        <span id="count">0</span>
                                     </div>
                                     <div class="icon-range d-flex">
                                         <IconLike />
-                                        <span id="count">35</span>
+                                        <span id="count">0</span>
                                     </div>
                                     <div class="icon-range d-flex">
                                         <IconView />
-                                        <span id="count">35</span>
+                                        <span id="count">0</span>
                                     </div>
                                     <div class="icon-range d-flex">
                                         <IconShare />
@@ -138,200 +140,201 @@
                     </div>
                 </div>
             </div>
-            <button @click="loadMore">show more reviews</button>
+            <!-- <button @click="loadMore">show more reviews</button> -->
         </div>
     </div>
 </template>
 
 <script setup>
-// import icon
-import IconMedia from '../../assets/icons/IconMedia.vue';
-import IconGif from '../../assets/icons/IconGif.vue';
-import IconPoll from '../../assets/icons/IconPoll.vue';
-import IconMap from '../../assets/icons/IconMap.vue';
-import IconDate from '../../assets/icons/IconDate.vue';
-import IconEmote from '../../assets/icons/IconEmote.vue';
-import IconView from '../../assets/icons/IconView.vue';
-import IconComment from '../../assets/icons/IconComment.vue';
-import IconLike from '../../assets/icons/IconLike.vue';
-import IconRetweet from '../../assets/icons/IconRetweet.vue';
-import IconShare from '../../assets/icons/IconShare.vue'
-import IconThreeDots from '../../assets/icons/IconThreeDots.vue'
-import IconTrash from '../../assets/icons/IconTrash.vue'
+    import IconMedia from '../../assets/icons/IconMedia.vue';
+    import IconGif from '../../assets/icons/IconGif.vue';
+    import IconPoll from '../../assets/icons/IconPoll.vue';
+    import IconMap from '../../assets/icons/IconMap.vue';
+    import IconDate from '../../assets/icons/IconDate.vue';
+    import IconEmote from '../../assets/icons/IconEmote.vue';
+    import IconView from '../../assets/icons/IconView.vue';
+    import IconComment from '../../assets/icons/IconComment.vue';
+    import IconLike from '../../assets/icons/IconLike.vue';
+    import IconRetweet from '../../assets/icons/IconRetweet.vue';
+    import IconShare from '../../assets/icons/IconShare.vue'
+    import IconTrash from '../../assets/icons/IconTrash.vue'
+    import { ref, onMounted } from 'vue';
+    import { getAllPosts, addPosts, addImg, deleteContent } from '../../api/posts.js'
+    import { API_URL } from '../../const';
+    import session from '../../stores/session';
 
-// import api
-import { ref, onMounted } from 'vue';
-import { getAllPosts, addPosts, addImg, deleteContent } from '../../api/posts.js'
-import { API_URL, DEFAULT_PHOTO } from '../../const';
-import { useRoute } from "vue-router";
+    const sessionStores = session();
+    const limit = ref(5);
+    const posts = ref([]);
+    const newPost = ref("");
+    const delet = ref([])
+    let previewImg = ref(null);
+    const lastPostId = ref(null);
 
-const page = ref(0);
-const limit = ref();
-const posts = ref([]);
-const newPost = ref("");
-const route = useRoute();
-const delet = ref([])
-let previewImg = ref(null);
-
-
-// console.log(posts);
-
-async function getPosts() {
-    try {
-        const getPosts = await getAllPosts({ page: page.value, limit: limit.value });
-        if (getPosts.data.message === 'get all post success') {
-            posts.value = getPosts.data.data;
+    async function getPosts() {
+        try {
+            const getContents = await getAllPosts({ limit: limit.value });
+            if (getContents.data.message === 'SUCCESS') {
+                posts.value = getContents.data.data.data;
+                lastPostId.value = getContents.data.data.lastId;
+            }
+        } catch (error) {
+            return
         }
-    } catch (error) {
-        return
     }
-}
 
-async function createPosts(e) {
-    try {
-        e.preventDefault();
-        const createNewPost = await addPosts({ content: newPost.value, img: previewImg.value });
-        if (createNewPost.data.message === 'Create new post success') {
-            console.log(newPost.value);
+    async function scrolledToTop(div) {
+        if(div.scrollTop + div.clientHeight >= div.scrollHeight && lastPostId.value !== null) {
+            const getPosts = await getAllPosts({ lastId: lastPostId.value, limit: limit.value });
+            if (getPosts.data.message === 'SUCCESS') {
+                posts.value.push(...getPosts.data.data.data);
+                lastPostId.value = getPosts.data.data.lastId;
+            }
         }
-    } catch (error) {
-        console.log(error);
     }
-}
 
-async function uploadImg(e) {
-    const uploadImg = await addImg(e.target.files[0]);
-    previewImg.value = uploadImg.data.data;
-}
-
-async function deletPost(id) {
-    try {
-        const deletePost = await deleteContent(id)
-        if (deletePost.data.message === 'Post deleted successfully') {
-            delet.value = deletePost.data.data
-            console.log(delet.value);
+    async function createPosts(e) {
+        try {
+            e.preventDefault();
+            const createNewPost = await addPosts({ content: newPost.value, img: previewImg.value });
+            if (createNewPost.data.message === 'Create new post success') {
+                console.log(newPost.value);
+            }
+        } catch (error) {
+            console.log(error);
         }
-    } catch (error) {
-        console.log(error);
     }
-}
 
-function isDisabled() {
-    return newPost.value.length <= 0
-}
+    async function uploadImg(e) {
+        const uploadImg = await addImg(e.target.files[0]);
+        previewImg.value = uploadImg.data.data;
+    }
 
-onMounted(async () => {
-    await getPosts();
-});
+    async function deletPost(id) {
+        try {
+            const deletePost = await deleteContent(id)
+            if (deletePost.data.message === 'Post deleted successfully') {
+                delet.value = deletePost.data.data
+                console.log(delet.value);
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    }
 
+    function isDisabled() {
+        return newPost.value.length <= 0
+    }
+
+    onMounted(async () => {
+        await getPosts();
+    });
 </script>
 
 <style scoped>
-/* .tablist */
+    .content {
+        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        transition: 0.3s;
+    }
 
-.content {
-    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-    transition: 0.3s;
-}
+    .content:hover {
+        background-color: rgba(15, 20, 25, 0.1);
+        cursor: pointer;
+    }
 
-.content:hover {
-    background-color: rgba(15, 20, 25, 0.1);
-    cursor: pointer;
-}
+    .form-content {
+        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    }
 
-.form-content {
-    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-}
+    .main {
+        border-left: 1px solid rgba(0, 0, 0, 0.1);
+        border-right: 1px solid rgba(0, 0, 0, 0.1);
+    }
 
-.main {
-    border-left: 1px solid rgba(0, 0, 0, 0.1);
-    border-right: 1px solid rgba(0, 0, 0, 0.1);
-}
+    .post {
+        border-radius: 20px;
+    }
 
-.post {
-    border-radius: 20px;
-}
+    .tablist-top {
+        background-color: rgba(255, 255, 255, 0.884);
+        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        backdrop-filter: blur(10px);
+        /* z-index: 99999999; */
+        position: relative;
+        width: 100%;
+    }
 
-.tablist-top {
-    background-color: rgba(255, 255, 255, 0.884);
-    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-    backdrop-filter: blur(10px);
-    /* z-index: 99999999; */
-    position: relative;
-    width: 100%;
-}
+    .present {
+        transition: 0.3s;
+    }
 
-.present {
-    transition: 0.3s;
-}
+    .present:hover {
+        background-color: rgba(15, 20, 25, 0.1);
+    }
 
-.present:hover {
-    background-color: rgba(15, 20, 25, 0.1);
-}
+    .text {
+        color: rgb(83, 100, 113);
+        font-weight: 500;
+        font-size: 15px;
+    }
 
-.text {
-    color: rgb(83, 100, 113);
-    font-weight: 500;
-    font-size: 15px;
-}
+    .text-forYou {
+        border-bottom: 4px solid rgb(29, 155, 240);
+        ;
+        border-radius: 4px;
+    }
 
-.text-forYou {
-    border-bottom: 4px solid rgb(29, 155, 240);
-    ;
-    border-radius: 4px;
-}
+    .text-input {
+        border: none;
+    }
 
-.text-input {
-    border: none;
-}
+    input:focus {
+        outline: none
+    }
 
-input:focus {
-    outline: none
-}
+    input[type="text"] {
+        font-size: 20px;
+    }
 
-input[type="text"] {
-    font-size: 20px;
-}
+    input[type="file"] {
+        display: none;
+    }
 
-input[type="file"] {
-    display: none;
-}
+    a {
+        color: black;
+        text-decoration: none;
+    }
 
-a {
-    color: black;
-    text-decoration: none;
-}
+    ::placeholder {
+        font-size: 20px;
+        font-weight: 400;
+    }
 
-::placeholder {
-    font-size: 20px;
-    font-weight: 400;
-}
+    .img {
+        width: 50px;
+        height: 50px;
+        border-radius: 100%;
+    }
 
-.img {
-    width: 50px;
-    height: 50px;
-    border-radius: 100%;
-}
+    #count {
+        padding: 10px;
+    }
 
-#count {
-    padding: 10px;
-}
+    .icon-range {
+        margin-right: 50px;
+        margin-top: 10px;
+    }
 
-.icon-range {
-    margin-right: 50px;
-    margin-top: 10px;
-}
+    .bgBiru:hover {
+        background-color: rgba(29, 155, 240, 0.1);
+        fill: rgb(29, 155, 240) !important;
+    }
 
-.bgBiru:hover {
-    background-color: rgba(29, 155, 240, 0.1);
-    fill: rgb(29, 155, 240) !important;
-}
-
-.btn-primary{
-    background-color: rgb(29, 155, 240);
-    border: none;
-    border-radius: 50px;
-    padding: 10px;
-    width: 90px;
-}
+    .btn-primary{
+        background-color: rgb(29, 155, 240);
+        border: none;
+        border-radius: 50px;
+        padding: 10px;
+        width: 90px;
+    }
 </style>
