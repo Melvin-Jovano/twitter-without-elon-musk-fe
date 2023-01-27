@@ -223,7 +223,6 @@
             }
             step.value++;
         } catch (error) {
-            console.error(error);
             alert('Username Already Taken');
         }
     }

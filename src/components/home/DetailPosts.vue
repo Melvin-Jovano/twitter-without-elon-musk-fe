@@ -122,7 +122,7 @@ async function getPostsId() {
             postId.value = getPosts.data.data;
         }
     } catch (error) {
-        console.log(error);
+        return;
     }
 }
 
@@ -131,10 +131,9 @@ async function deletPost(id) {
         const deletePost = await deleteContent(id.value)
         if (deletePost.data.message === 'Post deleted successfully') {
             delet.value = deletePost.data.data
-            console.log(delet.value);
         }
     } catch (error) {
-        console.log(error);
+        return;
     }
 }
 

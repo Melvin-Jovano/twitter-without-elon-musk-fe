@@ -22,8 +22,8 @@
                     <img src="../../assets/cat.jpg" alt="Profile" class="img">
                 </div>
                 <div class="form-input p-2 w-100">
-                    <form>
-                        <input type="text" class="text-input" accept="image/*" multiple="multiple" @change="previewMultiImage" v-model="newPost" placeholder="What's happening?">
+                    <form action="#" @submit.prevent="createPosts($event.target)">
+                        <textarea v-model="newPost" class="text-input border-0 w-100" placeholder="What's happening?" rows="4"></textarea>
                         <div class="mt-3">
                             <img class="rounded mx-auto d-block" :src="API_URL + previewImg" v-if="previewImg" width="400" />
                         </div>
@@ -53,7 +53,7 @@
                                     </div>
                                 </div>
                                 <div class="p-2 float-right">
-                                    <button type="button" class="btn btn-primary text-center fw-bold" @click="createPosts" :disabled="isDisabled(newPost)">Tweet</button>
+                                    <button type="submit" class="btn btn-primary text-center fw-bold" :disabled="isDisabled(newPost)">Tweet</button>
                                 </div>
                             </div>
                         </div>
@@ -83,22 +83,22 @@
                                         <span asd>·</span>
                                     </span>
                                     <span style="margin: 2px">
-                                        <time style="color: #536471; font-size: 15px;">13h</time>
+                                        <time style="color: #536471; font-size: 15px;">{{moment(post.created_at).fromNow()}}</time>
                                     </span>
                                 </div>
                                 
-                                <div v-if="sessionStores.userId === post.user.id" class="rounded-circle threedots bgBiru" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                                <div @click="selectedPostId = post.id" v-if="sessionStores.userId === post.user.id" class="rounded-circle threedots bgBiru" data-bs-toggle="modal" data-bs-target="#exampleModal">
                                     <IconTrash />
                                 </div>
 
-                                <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                <div class="modal fade" id="exampleModal">
                                     <div class="modal-dialog">
                                         <div class="modal-content">
                                             <div class="modal-body">
                                                 <h3>Delete Tweet?</h3>
-                                                <p>This can’t be undone and it will be removed from your profile, the timeline of any accounts that follow you, and from
+                                                <p>This can't be undone and it will be removed from your profile, the timeline of any accounts that follow you, and from
                                                 Twitter search results.</p>
-                                                <button class="btn btn-danger" type="submit" @click="deletPost(post.id)">Delete</button>
+                                                <button data-bs-dismiss="modal" class="btn btn-danger" type="submit" @click="deletPost()">Delete</button>
                                                 <button class="btn btn-white" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
                                             </div>
                                         </div>
@@ -159,15 +159,16 @@
     import IconShare from '../../assets/icons/IconShare.vue'
     import IconTrash from '../../assets/icons/IconTrash.vue'
     import { ref, onMounted } from 'vue';
+    import moment from 'moment';
     import { getAllPosts, addPosts, addImg, deleteContent } from '../../api/posts.js'
     import { API_URL } from '../../const';
     import session from '../../stores/session';
 
+    const selectedPostId = ref(null);
     const sessionStores = session();
     const limit = ref(5);
     const posts = ref([]);
     const newPost = ref("");
-    const delet = ref([])
     let previewImg = ref(null);
     const lastPostId = ref(null);
 
@@ -193,15 +194,14 @@
         }
     }
 
-    async function createPosts(e) {
+    async function createPosts() {
         try {
-            e.preventDefault();
             const createNewPost = await addPosts({ content: newPost.value, img: previewImg.value });
             if (createNewPost.data.message === 'Create new post success') {
-                console.log(newPost.value);
+                posts.value = [createNewPost.data.data, ...posts.value];
             }
         } catch (error) {
-            console.log(error);
+            return;
         }
     }
 
@@ -210,15 +210,14 @@
         previewImg.value = uploadImg.data.data;
     }
 
-    async function deletPost(id) {
+    async function deletPost() {
         try {
-            const deletePost = await deleteContent(id)
+            const deletePost = await deleteContent(selectedPostId.value)
             if (deletePost.data.message === 'Post deleted successfully') {
-                delet.value = deletePost.data.data
-                console.log(delet.value);
+                posts.value = posts.value.filter(post => post.id !== deletePost.data.data.id);
             }
         } catch (error) {
-            console.log(error);
+            return;
         }
     }
 
@@ -285,6 +284,7 @@
     }
 
     .text-input {
+        outline: none;        
         border: none;
     }
 

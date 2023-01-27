@@ -83,7 +83,6 @@
             });
             chatInput.value = '';
         } catch (error) {
-            console.error(error);
             return;
         }
     }
