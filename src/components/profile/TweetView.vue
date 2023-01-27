@@ -1,4 +1,5 @@
 <template>
+    <RouterView/>
     <div @scroll="scrolledToBottom($event.target)" class="overflow-auto hv-99">
         <div class="d-flex align-items-center head w-100" v-if="showComp">
             <div class="flex-shrink-1 me-4 pe-2">

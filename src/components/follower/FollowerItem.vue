@@ -60,25 +60,25 @@
     const props = defineProps([
         "follower",
         "followerFollowing"
-    ])
+    ]);
 
     const data = reactive({
         followerData : props.follower.follower,
         followerFollowing : props.followerFollowing,
         followerItem : null
-    })
+    });
 
-    const emit = defineEmits(["reloadData"])
+    const emit = defineEmits(["reloadData"]);
 
-    const isFollowed = ref(false)
-    const comp = getCurrentInstance()
+    const isFollowed = ref(false);
+    const comp = getCurrentInstance();
 
-    data.followerItem = comp.vnode.key
-    showFollowed(data.followerData)
+    data.followerItem = comp.vnode.key;
+    showFollowed(data.followerData);
     
-    function reloadData(){
-        isFollowed.value = false
-        emit("reloadData")
+    function reloadData() {
+        isFollowed.value = false;
+        emit("reloadData");
     }
     
     function showFollowed(val){
@@ -91,13 +91,13 @@
 
     async function follow(val){
         try {
-            const newFollow = await followUser(val)
+            const newFollow = await followUser(val);
             if (newFollow.data.message === "SUCCESS"){
-                isFollowed.value = true
-                emit('reloadData')
+                isFollowed.value = true;
+                emit('reloadData');
             }
         } catch (error) {
-            console.log(error)
+            console.log(error);
         }
     }
 </script>

@@ -1,12 +1,12 @@
 <template>
     <button data-bs-toggle="modal" id="click-modal-register" data-bs-target="#register-modal" class="d-none"></button>
 
-    <div class="modal fade" id="register-modal">
+    <div class="modal fade" id="register-modal" data-bs-backdrop="static" data-bs-keyboard="false">
         <div :class="`modal-dialog modal-dialog-centered ${showHeading ? 'modal-lg' : ''}`">
             <div class="modal-content p-3">
                 <div class="row">
                     <div class="col-1">
-                        <button class="btn-close" data-bs-dismiss="modal"></button>
+                        <button class="btn-close" id="close-register" data-bs-dismiss="modal"></button>
                     </div>
                     <div :class="`col ${showHeading ? 'text-center' : 'text-start'}`">
                         <div v-if="showHeading">
@@ -65,12 +65,24 @@
                     
                     <div v-if="!showHeading && step === 1">   
                         <h3 class="fw-bold my-4">Create your account</h3>
-                        <input v-model="username" type="text" placeholder="Username" class="form-control">
-                        
-                        <div class="my-4">
-                            <input v-model="password" type="password" placeholder="Password" class="form-control">
-                            <div class="text-danger text-xs" v-if="password.length < 6">
-                                Password Must Be At Least 6 Characters
+                        <div class="d-flex justify-content-center">
+                            <div class="form-floating w-100 d-inline">
+                                <input v-model="username" id="username" type="text" class="form-control" placeholder="Username" />
+                                <label for="username">
+                                    Username
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-center my-4">
+                            <div class="form-floating w-100 d-inline">
+                                <input v-model="password" type="password" id="password" class="form-control" placeholder="Password" />
+                                <label for="password">
+                                    Password
+                                </label>
+                                <div class="text-danger text-xs" v-if="password.length < 6">
+                                    Password Must Be At Least 6 Characters
+                                </div>
                             </div>
                         </div>
                         
@@ -217,6 +229,7 @@
     
                     await signUp({username: username.value, password: password.value, birthday: moment({year: yearInput.value, months: monthInput.value, date: days.value}).unix()});
 
+                    document.getElementById('close-register').click();
                     await router.push({name: 'login'});
                 }
                 return;

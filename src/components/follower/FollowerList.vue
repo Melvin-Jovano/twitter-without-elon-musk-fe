@@ -30,32 +30,32 @@
     </div>
     <div style="margin-top: 120px;" >
         <FollowerItem
-        v-if="data.followerData.length >0 && data.followerAndFollowing.length > 0 && selected"
-        v-for="follower in data.followerData"
-        :follower = "follower"
-        :key="follower.follower_id"
-        :followerFollowing="data.followerAndFollowing"
-        @reload-data="reloadData"
+            v-if="selected"
+            v-for="follower in data.followerData"
+            :follower = "follower"
+            :key="follower.follower_id"
+            :followerFollowing="data.followerAndFollowing"
+            @reload-data="reloadData"
         />
 
         <FollowingItem
-        v-else-if="data.followingData && !selected"
-        v-for="following in data.followingData"
-        :following = "following"
-        :key="following.user_id"
-        :followerFollowing="data.followerAndFollowing"
-        @reload-data="getFollowing"
+            v-else-if="!selected"
+            v-for="following in data.followingData"
+            :following = "following"
+            :key="following.user_id"
+            :followerFollowing="data.followerAndFollowing"
+            @reload-data="getFollowing"
         />
     </div>
 </template>
 
 <script setup>
     import IconBack from '../../assets/icons/IconBack.vue';
-    import { reactive, ref, watchEffect, onBeforeUpdate } from 'vue';
+    import { reactive, ref, watchEffect, onBeforeUpdate, onMounted } from 'vue';
     import { useRoute } from 'vue-router';
     import { getUser } from '../../api/profile';
     import FollowerItem from './FollowerItem.vue';
-    import { getAllFollowers, getAllFollowing } from '../../api/follow.js'
+    import { getAllFollowers, getAllFollowing } from '../../api/follow.js';
     import FollowingItem from './FollowingItem.vue';
 
     const data = reactive({
@@ -63,38 +63,31 @@
         followerData : [],
         followingData : [],
         followerAndFollowing : []
-    })
+    });
     
-    const selected = ref(true)
-    const route = useRoute()
+    const selected = ref(true);
+    const route = useRoute();
 
-    onBeforeUpdate(()=>{
-        getFollowEachOther()
-    })
+    onBeforeUpdate(() => {
+        getFollowEachOther();
+    });
 
-    watchEffect(()=>{
-        if(route.name == "follower"){
-            selected.value = true
-            getFollowers()
-            getFollowing()
-        }
-        else if(route.name == "following"){
-            selected.value = false
-            getFollowers()
-            getFollowing()
-        }
-    })
+    watchEffect(() => {
+        selected.value = (route.name === "follower") ? true : false;
+        getFollowers();
+        getFollowing();
+    });
 
-    function reloadData(){
-        getAllFollowing()
-        getAllFollowers()
-        getFollowEachOther()
+    function reloadData() {
+        getAllFollowing();
+        getAllFollowers();
+        getFollowEachOther();
     }
 
-    function getFollowEachOther(){
+    function getFollowEachOther() {
         try {
-            if(data.followerData.length > 0 && data.followingData.length > 0){
-                data.followerAndFollowing = []
+            if(data.followerData.length > 0 && data.followingData.length > 0) {
+                data.followerAndFollowing = [];
                 data.followerData.forEach(follower => {
                     data.followingData.forEach(following => {
                         if(follower.follower.username == following.user.username){
@@ -102,51 +95,53 @@
                                 data.followerAndFollowing.push(follower)
                             }
                         }
-                    })
+                    });
                 });
             }
         } catch (error) {
-            console.log(error)
+            return;
         }
     }
 
-    async function getData(){
-        try{
-            const user = await getUser()
+    async function getData() {
+        try {
+            const user = await getUser();
             if(user.data.message === "SUCCESS"){
-                data.userData = user.data.data
+                data.userData = user.data.data;
             }
-        }
-        catch(error){
-            console.log(error)
+        } catch(error){
+            return;
         }
     }
 
     async function getFollowers(){
         try {
-            const followers = await getAllFollowers()
-            if(followers.data.message === "SUCCESS"){
-                data.followerData = followers.data.data
-                return data.followerData
+            const followers = await getAllFollowers();
+            if(followers.data.message === "SUCCESS") {
+                data.followerData = followers.data.data;
+                return data.followerData;
             }
         } catch (error) {
-            console.log(error)
+            return;
         }
     }
 
     async function getFollowing(){
         try {
-            const following = await getAllFollowing()
-            if(following.data.message === "SUCCESS"){
-                data.followingData = following.data.data
-                return data.followingData
+            const following = await getAllFollowing();
+            if(following.data.message === "SUCCESS") {
+                data.followingData = following.data.data;
+                return data.followingData;
             }
         } catch (error) {
-            console.log(error)
+            return;
         }
     }
 
-    getData()
+    onMounted(async () => {
+        await getData();
+    });
+
 </script>
 
 <style scoped>

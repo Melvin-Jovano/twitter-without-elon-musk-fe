@@ -86,9 +86,14 @@
                                         <time style="color: #536471; font-size: 15px;">{{moment(post.created_at).fromNow()}}</time>
                                     </span>
                                 </div>
-                                
-                                <div @click="selectedPostId = post.id" v-if="sessionStores.userId === post.user.id" class="rounded-circle threedots bgBiru" data-bs-toggle="modal" data-bs-target="#exampleModal">
-                                    <IconTrash />
+                                    
+                                <div class="rounded-circle" >
+                                    <span class="p-2">
+                                        <IconTrash @click="selectedPostId = post.id" v-if="sessionStores.userId === post.user.id"  data-bs-toggle="modal" data-bs-target="#exampleModal"/>
+                                    </span>
+                                    <span @click="follow(post.user.id)" class="p-2" v-if="sessionStores.userId !== post.user.id && !followings.some(user => user.user_id === post.user.id)">
+                                        <IconFollow />
+                                    </span>
                                 </div>
 
                                 <div class="modal fade" id="exampleModal">
@@ -107,8 +112,7 @@
                             </div>
                             <router-link :to="{name: 'detail', params: {id: post.id}}">
                                 <div class='mb-2'>
-                                    <!-- TODO Add Blue Text Color If Its Hashtag -->
-                                    <span>{{ post.content }}</span>
+                                    <span v-html="makeHashtagBlue(post.content)"></span>
                                 </div>
                                 <div class='text-center'>
                                     <img v-if="post.img !== null" class='post img-fluid' :src='API_URL + post.img '>
@@ -162,12 +166,15 @@
     import IconTrash from '../../assets/icons/IconTrash.vue'
     import { ref, onMounted } from 'vue';
     import IconLiked from '../../assets/icons/IconLiked.vue';
+    import IconFollow from '../../assets/icons/IconFollow.vue';
     import moment from 'moment';
     import { getAllPosts, addPosts, addImg, deleteContent } from '../../api/posts.js'
     import { API_URL } from '../../const';
     import session from '../../stores/session';
     import home from '../../stores/home';
+    import {makeHashtagBlue} from '../../utils/util';
     import {likePost} from '../../api/like';
+    import { followUser, getAllFollowing } from '../../api/follow';
 
     const selectedPostId = ref(null);
     const homeStores = home();
@@ -175,8 +182,19 @@
     const limit = ref(5);
     const posts = ref([]);
     const newPost = ref("");
-    let previewImg = ref(null);
+    const previewImg = ref(null);
     const lastPostId = ref(null);
+    const followings = ref([]);
+
+    async function follow(userId) {
+        try {
+            const foll = await followUser(userId);
+            followings.value.push(foll.data.data);
+        } catch (error) {
+            console.error(error);
+            return;
+        }
+    }
 
     async function like(postId) {
         try {
@@ -231,6 +249,7 @@
                 posts.value = [createNewPost.data.data, ...posts.value];
                 homeStores.trendKey++;
                 newPost.value = '';
+                previewImg.value = null;
             }
         } catch (error) {
             return;
@@ -260,6 +279,7 @@
 
     onMounted(async () => {
         await getPosts();
+        followings.value = (await getAllFollowing()).data.data;
     });
 </script>
 
@@ -356,11 +376,6 @@
     .icon-range {
         margin-right: 50px;
         margin-top: 10px;
-    }
-
-    .bgBiru:hover {
-        background-color: rgba(29, 155, 240, 0.1);
-        fill: rgb(29, 155, 240) !important;
     }
 
     .btn-primary{

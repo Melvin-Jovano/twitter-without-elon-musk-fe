@@ -3,19 +3,19 @@ import { API_URL } from "../const.js";
 
 export async function getAllFollowers(){
     const Followers = await axios.get(`${API_URL}followers`)
-    return Followers
+    return Followers;
 }
 
 export async function getAllFollowing(){
     const Following = await axios.get(`${API_URL}following`)
-    return Following
+    return Following;
 }
 
 export async function followUser(id){
     const createFollow = await axios.post(`${API_URL}follower`, {
-        followerId : id
+        followerId: id
     })
-    return createFollow
+    return createFollow;
 }
 
 export async function deleteFollowing(id){
@@ -24,5 +24,5 @@ export async function deleteFollowing(id){
             followerId : id
         }
     })
-    return delFollowing
+    return delFollowing;
 }

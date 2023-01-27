@@ -1,11 +1,11 @@
 <template>
     <button data-bs-toggle="modal" id="click-modal-login" data-bs-target="#login-modal" class="d-none"></button>
 
-    <div class="modal fade" id="login-modal">
+    <div class="modal fade" id="login-modal" data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog modal-lg modal-dialog-centered">
             <div class="modal-content p-3">
                 <div class="row">
-                    <div class="col-1 position-absolute">
+                    <div class="position-absolute">
                         <button class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
                     <div class="col text-center">
@@ -40,7 +40,15 @@
                             </div>
                         </div>
 
-                        <input v-model="username" type="text" class="form-control w-50 d-inline mb-3 mt-1" placeholder="Username" />
+                        <div class="d-flex justify-content-center">
+                            <div class="form-floating w-50 d-inline">
+                                <input v-model="username" id="username" type="text" class="form-control" placeholder="Username"/>
+                                <label for="username">
+                                    Username
+                                </label>
+                            </div>
+                        </div>
+
                         <br>
                         <button type="submit" class="border-0 w-50 text-sm my-3 rounded-50px bg-black text-white fw-bold py-1">Next</button>
                         <br>
@@ -48,15 +56,29 @@
                     </form>
 
                     <form @submit.prevent="createSession()" action="#" v-else>
-                        <input :value="username" type="text" class="form-control w-50 d-inline mb-3 mt-1" placeholder="Username" disabled="true" />
+
+                        <div class="d-flex justify-content-center">
+                            <div class="form-floating w-50 d-inline">
+                                <input :value="username" id="username" type="text" class="form-control" placeholder="Username" disabled="true" />
+                                <label for="username">
+                                    Username
+                                </label>
+                            </div>
+                        </div>
+                        
                         <br>
 
-                        <div class="w-50 d-inline-block">
-                            <input v-model="password" type="password" class="form-control mt-1" placeholder="Password" />
-                            <div class="text-start w-50">
-                                <a href="#" class="text-xs text-decoration-none">
-                                    Forgot Password?
-                                </a>
+                        <div class="d-flex justify-content-center">
+                            <div class="form-floating w-50 d-inline">
+                                <input v-model="password" type="password" class="form-control" placeholder="Password" />
+                                <label for="password">
+                                    Password
+                                </label>
+                                <div class="text-start w-50">
+                                    <a href="#" class="text-xs text-decoration-none">
+                                        Forgot Password?
+                                    </a>
+                                </div>
                             </div>
                         </div>
                         
