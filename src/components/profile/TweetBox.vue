@@ -32,12 +32,28 @@
                                 </a>
                             </div>
                         </div>
-                        <div class="rounded-circle threedots bgBiru">
-                            <IconThreeDots/>
+                        <div class="rounded-circle threedots bgMerah" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                            <IconTrash/>
+                        </div>
+                        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-body">
+                                        <h3>Delete Tweet?</h3>
+                                        <p>This can’t be undone and it will be removed from your profile, the timeline of any accounts that follow you, and from
+                                        Twitter search results.</p>
+                                        <button class="btn btn-danger" type="submit" data-bs-dismiss="modal" @click="deletPost(data.userData.id)">Delete</button>
+                                        <button class="btn btn-white" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <div v-html="data.userData.content">
-                        
+                    <div class="d-flex flex-column">
+                        <div v-html="data.userData.content">
+
+                        </div>
+                        <img v-if="data.userData.img" :src="API_URL + data.userData.img" class="img-fluid" style="border-radius: 20px;"/>
                     </div>
                     <div class="d-flex mt-12">
                         <div class="d-flex flex-fill align-items-center">
@@ -88,19 +104,23 @@
 </template>
 
 <script setup>
-    import { reactive, watchEffect } from 'vue';
+    import { reactive, watchEffect, ref } from 'vue';
     import IconComment from '../../assets/icons/IconComment.vue';
     import IconLike from '../../assets/icons/IconLike.vue';
     import IconRetweet from '../../assets/icons/IconRetweet.vue';
     import IconShare from '../../assets/icons/IconShare.vue';
     import IconThreeDots from '../../assets/icons/IconThreeDots.vue';
     import IconView from '../../assets/icons/IconView.vue';
+    import IconTrash from '../../assets/icons/IconTrash.vue'
     import { API_URL, DEFAULT_PHOTO } from '../../const';
     import moment from 'moment';
+    import { deleteContent } from '../../api/posts.js';
 
     const props = defineProps([
         "tweet"
     ])
+
+    const emit = defineEmits(["getPosts"])
 
     const data = reactive({
         userData : props.tweet,
@@ -114,10 +134,22 @@
     function formatTime(val){
         return moment(val).startOf('minutes').fromNow()
     }
+
+    async function deletPost(id) {
+        try {
+            const deletePost = await deleteContent(id)
+            if (deletePost.data.message === 'Post deleted successfully') {
+                emit('getPosts')
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    }
 </script>
 
 <style scoped>
-    .tweetBox{
+
+.tweetBox{
         cursor: pointer;
     }
     

@@ -115,10 +115,11 @@
                 </div>
             </div>
             <TweetBox
-            v-if="data.tweetData"
+            v-if="data.tweetData.length > 0"
             v-for="tweet in data.tweetData"
             :tweet = "tweet"
             :key="tweet.id"
+            @getPosts="getPosts"
             />
         </div>
         <EditModal :show = "data.isShow" :dataUser = data.userData @setModal="closeModal" @getData="getData" />
