@@ -6,3 +6,7 @@ export function scrollTopElement(element, to = 0) {
         return;
     }
 }
+
+export function range(size, startAt = 0) {
+    return [...Array(size).keys()].map(i => i + startAt);
+}

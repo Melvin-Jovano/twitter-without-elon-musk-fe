@@ -60,18 +60,25 @@
                 <button type="button" class="btn btn-primary btn-lg text-center fw-bold">Tweet</button>
             </div>
         </aside>
-        <section class="content-wrapper" style="margin-top: 20px">
-            <div class="d-flex mt-3">
-                <div class="row">
-                    <div class="col">
-                        <img src="../../assets/cat.jpg" alt="Profile" class="img">
+        <section data-event="removeOptions" class="p-2 pt-1 content-wrapper mt-2 cursor-pointer">
+            <div data-event="removeOptions" class="d-flex mt-3">
+                <div v-if="appStores.showOption" class="text-sm rounded bg-white position-absolute py-2 border shadow" style="width:280px;margin-top: -120px">
+                    <div class="cursor-pointer py-2 px-3 profile-option fw-bold">Add an existing account</div>
+                    <div @click="signOut()" class="cursor-pointer py-2 px-3 profile-option fw-bold">Log out @melvin_jovano_</div>
+                </div>
+
+                <div data-event="removeOptions" class="row">
+                    <div data-event="removeOptions" class="col-3">
+                        <img data-event="removeOptions" :src="API_URL + sessionStores.photo" alt="Profile" class="img">
                     </div>
-                    <div class="col">
-                        <span id="name fw-bold">Ambatukam</span>
-                        <p id="username">@username</p>
+                    <div data-event="removeOptions" class="col-6">
+                        <span data-event="removeOptions" id="name fw-bold">{{sessionStores.name}}</span>
+                        <p data-event="removeOptions" id="username">@{{sessionStores.username}}</p>
                     </div>
-                    <div class="col">
-                        <IconThreeDots />
+                    <div data-event="removeOptions" class="col">
+                        <div data-event="removeOptions" class="cursor-pointer">
+                            <IconThreeDotsWithDataset />
+                        </div>
                     </div>
                 </div>
             </div>
@@ -89,9 +96,25 @@
     import IconProfile from '../../assets/icons/IconProfile.vue'
     import IconMore from '../../assets/icons/IconMore.vue';
     import IconTwitter from '../../assets/icons/IconTwitter.vue';
-    import IconThreeDots from '../../assets/icons/IconThreeDots.vue';
+    import IconThreeDotsWithDataset from '../../assets/icons/IconThreeDotsWithDataset.vue';
+    import session from '../../stores/session';
+    import { API_URL } from '../../const';
+    import { logout } from '../../api/auth';
+    import router from '../../router';
+    import app from '../../stores/app';
 
+    const appStores = app();
+    const sessionStores = session();
 
+    async function signOut() {
+        try {
+            await logout();
+            localStorage.clear();
+            await router.push({name: 'login'});
+        } catch (error) {
+            return;
+        }
+    }
 </script>
 
 <style scoped>
@@ -138,12 +161,11 @@
         background-color: rgba(15, 20, 25, 0.1);
     }
 
-    .content-wrapper{
-        padding: 10px;
-    }
-
     .content-wrapper:hover{
         border-radius: 50px 50px 50px 50px;
+        background-color: rgba(15, 20, 25, 0.1);
+    }
+    .profile-option:hover {
         background-color: rgba(15, 20, 25, 0.1);
     }
 </style>
