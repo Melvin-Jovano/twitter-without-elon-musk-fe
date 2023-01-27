@@ -23,7 +23,7 @@
                 </div>
                 <div class="form-input p-2 w-100">
                     <form action="#" @submit.prevent="createPosts($event.target)">
-                        <textarea v-model="newPost" class="text-input border-0 w-100" placeholder="What's happening?" rows="4"></textarea>
+                        <textarea v-model="newPost" class="text-input border-0 w-100" placeholder="What's happening?" rows="3"></textarea>
                         <div class="mt-3">
                             <img class="rounded mx-auto d-block" :src="API_URL + previewImg" v-if="previewImg" width="400" />
                         </div>
@@ -164,8 +164,10 @@
     import { getAllPosts, addPosts, addImg, deleteContent } from '../../api/posts.js'
     import { API_URL } from '../../const';
     import session from '../../stores/session';
+    import home from '../../stores/home';
 
     const selectedPostId = ref(null);
+    const homeStores = home();
     const sessionStores = session();
     const limit = ref(5);
     const posts = ref([]);
@@ -200,6 +202,8 @@
             const createNewPost = await addPosts({ content: newPost.value, img: previewImg.value });
             if (createNewPost.data.message === 'Create new post success') {
                 posts.value = [createNewPost.data.data, ...posts.value];
+                homeStores.trendKey++;
+                newPost.value = '';
             }
         } catch (error) {
             return;
@@ -216,6 +220,7 @@
             const deletePost = await deleteContent(selectedPostId.value)
             if (deletePost.data.message === 'Post deleted successfully') {
                 posts.value = posts.value.filter(post => post.id !== deletePost.data.data.id);
+                homeStores.trendKey++;
             }
         } catch (error) {
             return;

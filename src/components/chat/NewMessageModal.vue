@@ -127,20 +127,6 @@
         }
     }
 
-    async function scrollUsers() {
-        try {
-            if(lastId.value !== null) {
-                const findUsers = await getUsers({name: input}, {lastId: lastId.value});
-                if(findUsers.data.message === 'SUCCESS') {
-                    lastId.value = findUsers.data.data.lastId;
-                    users.value.push(findUsers.data.data.data);
-                }
-            }
-        } catch (error) {
-            return;
-        }
-    }
-
     async function createChatList() {
         try {
             let name = 'New Chat';

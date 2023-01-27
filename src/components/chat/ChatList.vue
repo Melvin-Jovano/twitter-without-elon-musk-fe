@@ -26,8 +26,8 @@
                 </div>
             </div>
 
-            <div v-else>a
-                <div v-for="chatList in chatStores.list" :key="chatList.id" @click="selectChatList(chatList.id, chatList.name, chatList.photo)" :class="`chat-list cursor-pointer p-2 chat-list ${!chatList.isRead ? 'bg-focus' : ''}`">
+            <div v-else>
+                <div v-for="chatList in chatStores.list" :key="chatList.id" @click="selectChatList(chatList.id, chatList.name, chatList.photo, chatList.username)" :class="`chat-list cursor-pointer p-2 chat-list ${!chatList.isRead ? 'bg-focus' : ''}`">
                     <table>
                         <tr>
                             <td rowspan="2" class="">
@@ -37,7 +37,6 @@
                             </td>
                             <td class="fw-bold text-sm">
                                 {{ chatList.name }}&nbsp;
-                                
                                 <span class="text-muted text-xs">
                                     <span v-if="chatList.username !== null">
                                         @{{ chatList.username }}&nbsp;
@@ -97,7 +96,7 @@
         }
     }
 
-    async function selectChatList(groupId, name, photo) {
+    async function selectChatList(groupId, name, photo, username) {
         try {
             const getChats = await getChatByGroupId({limit: 10}, {groupId});
             if(getChats.data.message === 'SUCCESS') {
@@ -107,6 +106,8 @@
                 chatStores.name = name;
                 chatStores.photo = photo;
                 chatStores.groupId = groupId;
+                chatStores.username = username;
+                
                 setTimeout(() => {
                     const chatBubbles = document.getElementById('chat-bubbles');
                     scrollTopElement(chatBubbles, chatBubbles.scrollHeight);

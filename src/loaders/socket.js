@@ -31,12 +31,8 @@ export default class ClientSocket {
                         this.connect();
                         return;
                     }
+                    this.socket.disconnect();
                 }
-                this.socket.disconnect();
-            });
-
-            this.socket.on('new-chat', (data) => {
-                
             });
         });
     }

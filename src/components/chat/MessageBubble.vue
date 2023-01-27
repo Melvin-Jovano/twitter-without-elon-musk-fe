@@ -5,19 +5,21 @@
         </span>
         <div v-if="!props.stacked" class="my-3 text-xs">
             {{moment(props.time).fromNow()}}
-            <span v-if="props.isSeen && props.isMe">&nbsp;·&nbsp;Seen</span>
-            <span v-if="!props.isSeen && props.isMe">&nbsp;·&nbsp;Sent</span>
+            <span v-if="props.isSeen && props.isMe && !props.isGroup">&nbsp;·&nbsp;Seen</span>
+            <span v-if="!props.isSeen && props.isMe && !props.isGroup">&nbsp;·&nbsp;Sent</span>
         </div>
         <div v-else>&nbsp;</div>
     </div>
+
     <div v-else :class="`text-start px-3 py-1 ${props.isFirst ? 'mt-3' : ''}`">
+        <img v-if="props.isGroup" :src="API_URL + props.img" width="40" class="rounded-circle">&nbsp;
         <span :class="`fw-bold text-sm px-3 py-3 bg-whitesmoke ${props.stacked ? 'rounded-50px' : 'bubble-sender'}`">
             {{props.message}}
         </span>
         <div v-if="!props.stacked" class="my-3 text-xs">
-            {{moment(props.time).fromNow()}}
-            <span v-if="props.isSeen && props.isMe">&nbsp;·&nbsp;Seen</span>
-            <span v-if="!props.isSeen && props.isMe">&nbsp;·&nbsp;Sent</span>
+            <span v-if="props.isGroup">{{props.name}}</span>&nbsp;{{moment(props.time).fromNow()}}
+            <span v-if="props.isSeen && props.isMe && !props.isGroup">&nbsp;·&nbsp;Seen</span>
+            <span v-if="!props.isSeen && props.isMe && !props.isGroup">&nbsp;·&nbsp;Sent</span>
         </div>
         <div v-else>&nbsp;</div>
     </div>
@@ -26,6 +28,7 @@
 <script setup>
     import chat from '../../stores/chat';
     import moment from 'moment';
+    import { API_URL, DEFAULT_PHOTO } from '../../const';
 
     const props = defineProps({
         isSeen: {
@@ -51,6 +54,18 @@
         time: {
             type: String,
             default: () => moment().toString()
+        },
+        isGroup: {
+            type: Boolean,
+            default: () => false
+        },
+        img: {
+            type: String,
+            default: () => DEFAULT_PHOTO
+        },
+        name: {
+            type: String,
+            default: () => ''
         }
     });
     const chatStores = chat();

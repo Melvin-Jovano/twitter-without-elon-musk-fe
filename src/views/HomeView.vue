@@ -1,9 +1,3 @@
-<script setup>
-import MainContentVue from '../components/home/MainContent.vue';
-import HeaderSide from '../components/home/HeaderSide.vue';
-import SideMenuVue from '../components/home/SideMenu.vue';
-</script>
-
 <template>
     <div class="container justify-content-center">
         <div class="row">
@@ -14,8 +8,17 @@ import SideMenuVue from '../components/home/SideMenu.vue';
                 <MainContentVue />
             </div>
             <div class="col-3">
-                <SideMenuVue />
+                <SideMenuVue :key="homeStores.trendKey" />
             </div>
         </div>
     </div>
 </template>
+
+<script setup>
+    import MainContentVue from '../components/home/MainContent.vue';
+    import HeaderSide from '../components/home/HeaderSide.vue';
+    import SideMenuVue from '../components/home/SideMenu.vue';
+    import home from '../stores/home';
+
+    const homeStores = home();
+</script>
