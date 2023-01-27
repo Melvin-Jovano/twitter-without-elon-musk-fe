@@ -50,10 +50,8 @@
                         </div>
                     </div>
                     <div class="d-flex flex-column">
-                        <div v-html="data.userData.content">
-
-                        </div>
-                        <img v-if="data.userData.img" :src="API_URL + data.userData.img" class="img-fluid" style="border-radius: 20px;"/>
+                        {{data.userData.content}}
+                        <img v-if="data.userData.img !== null" :src="API_URL + data.userData.img" class="img-fluid mt-2" style="border-radius: 20px;"/>
                     </div>
                     <div class="d-flex mt-12">
                         <div class="d-flex flex-fill align-items-center">
@@ -61,7 +59,7 @@
                                 <IconComment/>
                             </div>
                             <span class="lh-sm ms-1 fc-gray boxJlh">
-                                1
+                                0
                             </span>
                         </div>
                         <div class="d-flex flex-fill align-items-center">
@@ -69,15 +67,16 @@
                                 <IconRetweet/>
                             </div>
                             <span class="lh-sm ms-1 fc-gray boxJlh">
-                                
+                                0
                             </span>
                         </div>
                         <div class="d-flex flex-fill align-items-center">
                             <div class="rounded-circle bgIcon bgMerah">
-                                <IconLike/>
+                                <IconLiked @click="like(data.userData.id)" v-if="data.userData.likes.some(like => like.user_id === sessionStores.userId)" />
+                                <IconLike @click="like(data.userData.id)" v-else/>
                             </div>
                             <span class="lh-sm ms-1 fc-gray boxJlh">
-                                
+                                {{ data.userData.likes.length }}
                             </span>
                         </div>
                         <div class="d-flex flex-fill align-items-center">
@@ -85,7 +84,7 @@
                                 <IconView/>
                             </div>
                             <span class="lh-sm ms-1 fc-gray boxJlh">
-                                2
+                                0
                             </span>
                         </div>
                         <div class="d-flex flex-fill align-items-center">
@@ -109,27 +108,49 @@
     import IconLike from '../../assets/icons/IconLike.vue';
     import IconRetweet from '../../assets/icons/IconRetweet.vue';
     import IconShare from '../../assets/icons/IconShare.vue';
-    import IconThreeDots from '../../assets/icons/IconThreeDots.vue';
     import IconView from '../../assets/icons/IconView.vue';
     import IconTrash from '../../assets/icons/IconTrash.vue'
     import { API_URL, DEFAULT_PHOTO } from '../../const';
     import moment from 'moment';
     import { deleteContent } from '../../api/posts.js';
+    import IconLiked from '../../assets/icons/IconLiked.vue';
+    import session from '../../stores/session';
+    import {likePost} from '../../api/like';
 
+    const sessionStores = session();
     const props = defineProps([
         "tweet"
-    ])
+    ]);
 
-    const emit = defineEmits(["getPosts"])
+    const emit = defineEmits(["getPosts"]);
 
     const data = reactive({
         userData : props.tweet,
-    })
+    });
 
     watchEffect(()=>{
         data.userData = props.tweet
         data.userData.uploadTime = formatTime(data.userData.created_at)
-    })
+    });
+
+    async function like(postId) {
+        try {
+            const like = await likePost({postId});
+            if(data.userData.likes.length > like.data.data.post._count.likes) {
+                data.userData.likes = data.userData.likes.filter(like => {
+                    if(like.user_id === sessionStores.userId) {
+                        return false;
+                    }
+                    return true;
+                });
+            } else {
+                data.userData.likes.push({user_id: sessionStores.userId});
+            }
+        } catch (error) {
+            console.error(error);
+            return;
+        }
+    }
 
     function formatTime(val){
         return moment(val).startOf('minutes').fromNow()

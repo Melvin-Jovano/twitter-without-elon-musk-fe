@@ -29,7 +29,7 @@
                 <IconLists />&emsp;Lists
             </router-link>
 
-            <router-link to="/" class="text-decoration-none py-2 px-3 my-2 navbar-list rounded-50px">
+            <router-link to="/profile" class="text-decoration-none py-2 px-3 my-2 navbar-list rounded-50px">
                 <IconProfile />&emsp;Profile
             </router-link>
 

@@ -1,15 +1,16 @@
 <template>
     <aside id="sidebar-wrapper" class="position-fixed hv-99" style="width:300px;overflow-x:hidden">
         <div class="row">
-            <div class="col">
-                <div class="small fw-light">rounded search input with icon</div>
-                <div class="input-group">
-                    <input class="form-control" type="search" value="search" id="example-search-input">
-                    <span class="input-group-append">
-                        <button class="btn btn-outline-secondary bg-white border-start-0 border-bottom-0 border ms-n5" type="button">
+            <div class="col pt-3">
+                <div class="input-wrapper px-1 py-1" style="border-radius:9999px">
+                    <div class="row">
+                        <div class="col-1 pt-1 px-4">
                             <IconSearch />
-                        </button>
-                    </span>
+                        </div>
+                        <div class="col">
+                            <input type="text" class="form-control text-sm outline-focus-none bg-transparent border-0" placeholder="Search Twitter">
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -57,6 +58,9 @@
 }
 
 .list-trending:hover {
+    background-color: rgba(15, 20, 25, 0.1);
+}
+.input-wrapper {
     background-color: rgba(15, 20, 25, 0.1);
 }
 </style>

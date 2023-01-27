@@ -1,5 +1,5 @@
 <template>
-    <div class="main overflow-auto hv-99" @scroll="scrolledToTop($event.target)">
+    <div class="main overflow-auto hv-99" @scroll="scrolledToBottom($event.target)">
         <div class="tablist-top">
             <h5 class="fw-bold m-3">Home</h5>
             <div class="tablist justify-content-between d-flex">
@@ -19,7 +19,7 @@
         <div class="all-content">
             <div class="form-content d-flex p-2" style="margin-top: 40px">
                 <div class="profile-pict p-2">
-                    <img src="../../assets/cat.jpg" alt="Profile" class="img">
+                    <img :src="API_URL + sessionStores.photo" alt="Profile" class="img">
                 </div>
                 <div class="form-input p-2 w-100">
                     <form action="#" @submit.prevent="createPosts($event.target)">
@@ -125,8 +125,9 @@
                                         <span id="count">0</span>
                                     </div>
                                     <div class="icon-range d-flex">
-                                        <IconLike />
-                                        <span id="count">0</span>
+                                        <IconLiked @click="like(post.id)" v-if="post.likes.some(like => like.user_id === sessionStores.userId)" />&nbsp;
+                                        <IconLike @click="like(post.id)" v-else />&nbsp;
+                                        <span id="count">{{post.likes.length}}</span>
                                     </div>
                                     <div class="icon-range d-flex">
                                         <IconView />
@@ -160,11 +161,13 @@
     import IconShare from '../../assets/icons/IconShare.vue'
     import IconTrash from '../../assets/icons/IconTrash.vue'
     import { ref, onMounted } from 'vue';
+    import IconLiked from '../../assets/icons/IconLiked.vue';
     import moment from 'moment';
     import { getAllPosts, addPosts, addImg, deleteContent } from '../../api/posts.js'
     import { API_URL } from '../../const';
     import session from '../../stores/session';
     import home from '../../stores/home';
+    import {likePost} from '../../api/like';
 
     const selectedPostId = ref(null);
     const homeStores = home();
@@ -175,6 +178,30 @@
     let previewImg = ref(null);
     const lastPostId = ref(null);
 
+    async function like(postId) {
+        try {
+            const like = await likePost({postId});
+            posts.value = posts.value.map(post => {
+                if(post.id === postId) {
+                    if(post.likes.length > like.data.data.post._count.likes) {
+                        post.likes = post.likes.filter(like => {
+                            if(like.user_id === sessionStores.userId) {
+                                return false;
+                            }
+                            return true;
+                        });
+                    } else {
+                        post.likes.push({user_id: sessionStores.userId});
+                    }
+                }
+                return post;
+            });
+        } catch (error) {
+            console.error(error);
+            return;
+        }
+    }
+
     async function getPosts() {
         try {
             const getContents = await getAllPosts({ limit: limit.value });
@@ -183,11 +210,11 @@
                 lastPostId.value = getContents.data.data.lastId;
             }
         } catch (error) {
-            return
+            return;
         }
     }
 
-    async function scrolledToTop(div) {
+    async function scrolledToBottom(div) {
         if(div.scrollTop + div.clientHeight >= div.scrollHeight && lastPostId.value !== null) {
             const getPosts = await getAllPosts({ lastId: lastPostId.value, limit: limit.value });
             if (getPosts.data.message === 'SUCCESS') {
