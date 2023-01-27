@@ -107,6 +107,7 @@
                             </div>
                             <router-link :to="{name: 'detail', params: {id: post.id}}">
                                 <div class='mb-2'>
+                                    <!-- TODO Add Blue Text Color If Its Hashtag -->
                                     <span>{{ post.content }}</span>
                                 </div>
                                 <div class='text-center'>
