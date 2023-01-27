@@ -4,6 +4,7 @@ import LoginView from '../views/LoginView.vue';
 import ProfileView from '../views/ProfileView.vue';
 import MessageView from '../views/MessageView.vue';
 import RegisterView from '../views/RegisterView.vue';
+import DetailPosts from '../components/home/DetailPosts.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -12,6 +13,14 @@ const router = createRouter({
       path: '/home',
       name: 'home',
       component: HomeView,
+      meta: {
+        middleware: [checkSession]
+      }
+    },
+    {
+      path: '/home/:id',
+      name: 'detail',
+      component: DetailPosts,
       meta: {
         middleware: [checkSession]
       }

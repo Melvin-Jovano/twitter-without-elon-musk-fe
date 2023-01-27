@@ -49,3 +49,7 @@ body{
 .rounded-50px {
   border-radius: 50px;
 }
+
+.hv-99 {
+  height: 99vh;
+}

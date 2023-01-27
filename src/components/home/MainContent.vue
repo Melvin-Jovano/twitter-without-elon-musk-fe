@@ -1,20 +1,21 @@
 <template>
-    <div class="main">
+    <div class="main overflow-auto hv-99">
         <div class="tablist-top">
             <h5 class="fw-bold m-3">Home</h5>
             <div class="tablist justify-content-between d-flex">
-                <div class="p-3 present w-50">
+                <div class="p-3 present w-50 cursor-pointer">
                     <div class="text-center">
                         <span class="text text-forYou p-3">For you</span>
                     </div>
                 </div>
-                <div class="p-3 present w-50">
+                <div class="p-3 present w-50 cursor-pointer">
                     <div class="text-center">
                         <span class="text text-foll p-3">Following</span>
                     </div>
                 </div>
             </div>
         </div>
+        
         <div class="all-content">
             <div class="form-content d-flex p-2" style="margin-top: 40px">
                 <div class="profile-pict p-2">
@@ -59,7 +60,7 @@
                     </form>
                 </div>
             </div>
-            <div class="content p-2" v-for="post in posts" :key="post.id">
+            <div class="content p-2 overflow-auto" v-for="post in posts" :key="post.id">
                 <div class="content-header p-2">
                     <div class="d-flex">
                         <div class="profile-pict mt-3 m-2">

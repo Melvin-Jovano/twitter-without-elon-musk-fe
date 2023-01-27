@@ -4,58 +4,39 @@
             <div class="sidebar-brand p-2">
                 <IconTwitter />
             </div>
-            <a href="#" class="text-decoration-none font-weight-light">
-                <div class="p-2 navbar-list">
-                    <IconHomes />
-                    <span class="p-4">Home</span>
-                </div>
-            </a>
-            <a href="#" class="text-decoration-none font-weight-light">
-                <div class="p-2 navbar-list">
-                    <IconHash />
-                    <span class="p-4">Explore</span>
-                </div>
-            </a>
-            <a href="#" class="text-decoration-none font-weight-light">
-                <div class="p-2 navbar-list">
-                    <IconNotification />
-                    <span class="p-4">Notifications</span>
-                </div>
-            </a>
 
-            <router-link to="/message">
-                <a href="#" class="text-decoration-none font-weight-light">
-                    <div class="p-2 navbar-list">
-                        <IconMessage />
-                        <span class="p-4">Messages</span>
-                    </div>
-                </a>
+            <router-link to="/home" class="text-decoration-none py-2 px-3 my-2 navbar-list rounded-50px">
+                <IconHomes />&emsp;Home
             </router-link>
-            
-            <a href="#" class="text-decoration-none font-weight-light">
-                <div class="p-2 navbar-list">
-                    <IconBookmarks />
-                    <span class="p-4">Bookmarks</span>
-                </div>
-            </a>
-            <a href="#" class="text-decoration-none font-weight-light">
-                <div class="p-2 navbar-list">
-                    <IconLists />
-                    <span class="p-4">Lists</span>
-                </div>
-            </a>
-            <a href="#" class="text-decoration-none font-weight-light">
-                <div class="p-2 navbar-list">
-                    <IconProfile />
-                    <span class="p-4">Profile</span>
-                </div>
-            </a>
-            <a href="#" class="text-decoration-none font-weight-light">
-                <div class="p-2 navbar-list">
-                    <IconMore />
-                    <span class="p-4">More</span>
-                </div>
-            </a>
+
+            <router-link to="/" class="text-decoration-none py-2 px-3 my-2 navbar-list rounded-50px">
+                <IconHash />&emsp;Explore
+            </router-link>
+
+            <router-link to="/" class="text-decoration-none py-2 px-3 my-2 navbar-list rounded-50px">
+                <IconNotification />&emsp;Notifications
+            </router-link>
+
+            <router-link to="/message" class="text-decoration-none py-2 px-3 my-2 navbar-list rounded-50px">
+                <IconMessage/>&emsp;Messages
+            </router-link>
+
+            <router-link to="/" class="text-decoration-none py-2 px-3 my-2 navbar-list rounded-50px">
+                <IconBookmarks />&emsp;Bookmarks
+            </router-link>
+
+            <router-link to="/" class="text-decoration-none py-2 px-3 my-2 navbar-list rounded-50px">
+                <IconLists />&emsp;Lists
+            </router-link>
+
+            <router-link to="/" class="text-decoration-none py-2 px-3 my-2 navbar-list rounded-50px">
+                <IconProfile />&emsp;Profile
+            </router-link>
+
+            <router-link to="/" class="text-decoration-none py-2 px-3 my-2 navbar-list rounded-50px">
+                <IconMore />&emsp;More
+            </router-link>
+
             <div class="p-2 mt-4">
                 <button type="button" class="btn btn-primary btn-lg text-center fw-bold">Tweet</button>
             </div>
@@ -72,8 +53,8 @@
                         <img data-event="removeOptions" :src="API_URL + sessionStores.photo" alt="Profile" class="img">
                     </div>
                     <div data-event="removeOptions" class="col-6">
-                        <span data-event="removeOptions" id="name fw-bold">{{sessionStores.name}}</span>
-                        <p data-event="removeOptions" id="username">@{{sessionStores.username}}</p>
+                        <span data-event="removeOptions" class="fw-bold text-sm">{{sessionStores.name}}</span>
+                        <p data-event="removeOptions" class="text-sm">@{{sessionStores.username}}</p>
                     </div>
                     <div data-event="removeOptions" class="col">
                         <div data-event="removeOptions" class="cursor-pointer">
@@ -120,7 +101,6 @@
 <style scoped>
     #wrapper{
         position: fixed;
-        /* border-right: 1px solid rgba(0, 0, 0, 0.075); */
     }
 
     .img{
@@ -154,6 +134,7 @@
 
     .navbar-list{
         transition: 0.3s;
+        display: block;
     }
 
     .navbar-list:hover{
@@ -167,6 +148,9 @@
     }
     .profile-option:hover {
         background-color: rgba(15, 20, 25, 0.1);
+    }
+    .router-link-active {
+        font-weight: bold;
     }
 </style>
 

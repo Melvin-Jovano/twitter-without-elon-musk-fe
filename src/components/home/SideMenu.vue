@@ -1,12 +1,12 @@
 <script setup>
-import IconSearch from '../../assets/icons/IconSearch.vue';
-import IconThreeDot from '../../assets/icons/IconThreeDots.vue';
+    import IconSearch from '../../assets/icons/IconSearch.vue';
+    import IconThreeDot from '../../assets/icons/IconThreeDots.vue';
 </script>
 
 <template>
-    <aside id="sidebar-wrapper" class="m-3">
+    <aside id="sidebar-wrapper" class="position-fixed hv-99" style="width:300px;overflow-x:hidden">
         <div class="row">
-            <div class="col mx-auto">
+            <div class="col">
                 <div class="small fw-light">rounded search input with icon</div>
                 <div class="input-group">
                     <input class="form-control" type="search" value="search" id="example-search-input">
@@ -18,7 +18,8 @@ import IconThreeDot from '../../assets/icons/IconThreeDots.vue';
                 </div>
             </div>
         </div>
-        <div class="list">
+
+        <div class="list mt-4">
             <div class="list-wrap mt-1 p-3">
                 <span style="color: #0f1419; font-size: 20px; font-weight: 800;" class="mb-4">Trends for you</span>
                 <a href="#" class="text-decoration-none font-weight-light" v-for="index in 10" :key="index">
