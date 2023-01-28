@@ -169,12 +169,12 @@
         }
     }
     
-    function openModal(){
-        data.isShow = true
+    function openModal() {
+        data.isShow = true;
     }
     
-    function closeModal(){
-        data.isShow = false
+    function closeModal() {
+        data.isShow = false;
     }
 
     function format_date(val){

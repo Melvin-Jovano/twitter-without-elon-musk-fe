@@ -30,7 +30,7 @@
     </div>
     <div style="margin-top: 120px;" >
         <FollowerItem
-            v-if="selected && data.followerAndFollowing.length > 0"
+            v-if="selected"
             v-for="follower in data.followerData"
             :follower = "follower"
             :key="follower.follower_id"
@@ -106,7 +106,7 @@
     async function getData() {
         try {
             const user = await getUser();
-            if(user.data.message === "SUCCESS"){
+            if(user.data.message === "SUCCESS") {
                 data.userData = user.data.data;
             }
         } catch(error){
