@@ -45,7 +45,7 @@
             <div data-event="removeOptions" class="d-flex mt-3">
                 <div v-if="appStores.showOption" class="text-sm rounded bg-white position-absolute py-2 border shadow" style="width:280px;margin-top: -120px">
                     <div class="cursor-pointer py-2 px-3 profile-option fw-bold">Add an existing account</div>
-                    <div @click="signOut()" class="cursor-pointer py-2 px-3 profile-option fw-bold">Log out @melvin_jovano_</div>
+                    <div @click="signOut()" class="cursor-pointer py-2 px-3 profile-option fw-bold">Log out @{{ sessionStores.username }}</div>
                 </div>
 
                 <div data-event="removeOptions" class="row">

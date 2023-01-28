@@ -30,7 +30,7 @@
     </div>
     <div style="margin-top: 120px;" >
         <FollowerItem
-            v-if="selected"
+            v-if="selected && data.followerAndFollowing.length > 0"
             v-for="follower in data.followerData"
             :follower = "follower"
             :key="follower.follower_id"
