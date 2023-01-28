@@ -127,7 +127,7 @@
         try {
             chatSocket.socket.on('new-chat-list', async (body) => {
                 if(body.userIds.includes(sessionStores.userId)) {
-                    const getChatList = await getChatLists({limit: 10});
+                    const getChatList = await getChatLists({limit: 14});
                     if(getChatList.data.message === 'SUCCESS') {
                         chatStores.list = getChatList.data.data.data;
                         chatStores.listLastId = getChatList.data.data.lastId;
@@ -141,7 +141,7 @@
                 }
             });
 
-            const getChatList = await getChatLists({limit: 10});
+            const getChatList = await getChatLists({limit: 14});
             if(getChatList.data.message === 'SUCCESS') {
                 chatStores.list = getChatList.data.data.data;
                 chatStores.listLastId = getChatList.data.data.lastId;

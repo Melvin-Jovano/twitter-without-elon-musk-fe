@@ -23,7 +23,7 @@
                 <IconInfoVue />
             </div>
         </div>
-        <div class="hv-80 mt-3 overflow-auto" @scroll="scrolledToTop($event.target)" id="chat-bubbles">
+        <div class="hv-82 mt-3 overflow-auto" @scroll="scrolledToTop($event.target)" id="chat-bubbles">
             <MessageBubble v-for="(chat, idx) in chatStores.messages" :message="chat.content" :time="chat.created_at" :isMe="chat.sender_id === sessionStores.userId" :stacked="idx+2 <= chatStores.messages.length && chatStores.messages[idx+1].sender_id === chat.sender_id" :isFirst="idx === 0" :key="chat.id" :isSeen="chat.is_read" :isGroup="chatStores.username === null" :img="chat.user.photo" :name="chat.user.name" />
         </div>
         <div>
@@ -89,7 +89,7 @@
 
     async function scrolledToTop(div) {
         if(div.scrollTop === 0 && chatStores.messagesLastId !== null) {
-            const getChats = await getChatByGroupId({limit: 10, lastId: chatStores.messagesLastId}, {groupId: chatStores.groupId});
+            const getChats = await getChatByGroupId({limit: 12, lastId: chatStores.messagesLastId}, {groupId: chatStores.groupId});
             if(getChats.data.message === 'SUCCESS') {
                 chatStores.messagesLastId = getChats.data.data.lastId;
                 chatStores.messages = [...getChats.data.data.data.reverse(), ...chatStores.messages];
