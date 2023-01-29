@@ -28,9 +28,9 @@
             </router-link>
         </div>
     </div>
-    <div style="margin-top: 120px;" >
+    <div style="margin-top: 120px;" :key="tablKey">
         <FollowerItem
-            v-if="selected"
+            v-if="selected && data.followerAndFollowing"
             v-for="follower in data.followerData"
             :follower = "follower"
             :key="follower.follower_id"
@@ -66,21 +66,22 @@
     });
     
     const selected = ref(true);
+    const tablKey = ref(0);
     const route = useRoute();
 
     onBeforeUpdate(() => {
         getFollowEachOther();
     });
 
-    watchEffect(() => {
+    watchEffect(async () => {
         selected.value = (route.name === "follower") ? true : false;
-        getFollowers();
-        getFollowing();
+        await getFollowers();
+        await getFollowing();
     });
 
-    function reloadData() {
-        getAllFollowing();
-        getAllFollowers();
+    async function reloadData() {
+        await getAllFollowing();
+        await getAllFollowers();
         getFollowEachOther();
     }
 
@@ -114,24 +115,22 @@
         }
     }
 
-    async function getFollowers(){
+    async function getFollowers() {
         try {
             const followers = await getAllFollowers();
             if(followers.data.message === "SUCCESS") {
                 data.followerData = followers.data.data;
-                return data.followerData;
             }
         } catch (error) {
             return;
         }
     }
 
-    async function getFollowing(){
+    async function getFollowing() {
         try {
             const following = await getAllFollowing();
             if(following.data.message === "SUCCESS") {
                 data.followingData = following.data.data;
-                return data.followingData;
             }
         } catch (error) {
             return;
@@ -140,6 +139,10 @@
 
     onMounted(async () => {
         await getData();
+        // Refresh Component After Finishing Data Mutation
+        setTimeout(() => {
+            tablKey.value += 1;
+        }, 250);
     });
 
 </script>
