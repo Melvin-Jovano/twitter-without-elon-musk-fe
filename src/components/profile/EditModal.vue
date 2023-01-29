@@ -210,7 +210,7 @@
     watchEffect(()=>{
         showModal.value = props.show
         data.userData = props.dataUser
-        data.userData.birthDate = formatDate(data.userData.created_at)
+        data.userData.birthDate = formatDate(data.userData.birthday)
     })
 
     onUpdated(()=>{
@@ -227,7 +227,7 @@
     }
 
     function formatDate(val){
-        return moment(val).subtract(20, 'years').format('LL')
+        return moment.unix(val).format('MMMM d, YYYY')
     }
     
     function handleCoverUpload( event ){
